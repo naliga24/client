@@ -4,38 +4,23 @@ import {
   useState,
   Fragment,
 } from 'react'
-import { FiArrowUpRight, FiCopy } from 'react-icons/fi'
+import { 
+  FiArrowUpRight, 
+} from 'react-icons/fi'
 import { AiOutlineDown } from 'react-icons/ai'
-import { BsCheck2Circle } from 'react-icons/bs'
-import { HiOutlineDotsVertical, HiExternalLink } from 'react-icons/hi'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { 
+  HiOutlineDotsVertical, 
+} from 'react-icons/hi'
 import ethLogo from '../../assets/eth.png'
 import uniswapLogo from '../../assets/uniswap.png'
 import { useContext } from 'react'
 import { TransactionContext } from '../../context/TransactionContext'
 import { client } from '../../lib/sanityClient'
 import Link from 'next/link'
-
-import Modal from 'react-modal'
-import {
-  ContainerModal,
-  HeaderModal,
-  DetailsGroupModal,
-  DisconnectGroup,
-  ConnectWith,
-  DisconnectButton,
-  Address,
-  HelperGroup,
-  Helper,
-  HelperItem,
-  VscChromeClose,
-  ClipboardGroup,
-} from "./style";
-
-Modal.setAppElement('#__next')
+import ModalAccount from "../modal/account-details"
 
 const style = {
-  wrapper: `p-4 w-screen flex justify-between items-center`,
+  wrapper: `p-4 w-screen flex justify-between items-center overflow-auto`,
   headerLogo: `flex w-1/4 items-center justify-start`,
   nav: `flex-1 flex justify-center items-center`,
   navItemsContainer: `flex bg-[#191B1F] rounded-3xl`,
@@ -47,85 +32,6 @@ const style = {
   buttonTextContainer: `h-8 flex items-center`,
   buttonIconContainer: `flex items-center justify-center w-8 h-8`,
   buttonAccent: `bg-[#172A42] border border-[#163256] hover:border-[#234169] h-full rounded-2xl flex items-center justify-center text-[#4F90EA]`,
-}
-
-const customStyles = {
-  content: {
-    top: '58%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: 'transparent',
-    padding: 0,
-    border: 'none',
-  },
-  overlay: {
-    backgroundColor: 'rgba(10, 11, 13, 0.75)',
-  },
-}
-
-const ModalAccount = ({
-  isOpen,
-  setOpen,
-  userName,
-  currentAccount,
-  disconnect,
-}) => {
-  const [copied, setCopied] = useState(false)
-
-  const onCopied = () => {
-    setCopied(true)
-    setTimeout(function () {
-      setCopied(false)
-    }, 1000);
-  }
-
-  return (
-    <Modal isOpen={isOpen} onRequestClose={() => setOpen()} style={customStyles}>
-      <ContainerModal>
-        <HeaderModal>
-          Account <VscChromeClose onClick={() => setOpen()} />
-        </HeaderModal>
-        <DetailsGroupModal>
-          <DisconnectGroup>
-            <ConnectWith>
-              Connected with MetaMask
-            </ConnectWith>
-            <DisconnectButton
-              onClick={() => disconnect()}
-            >
-              Disconnect
-            </DisconnectButton>
-          </DisconnectGroup>
-          <Address>
-            {userName}
-          </Address>
-          <HelperGroup>
-            <HelperItem>
-              <Helper>
-                <CopyToClipboard
-                  text={currentAccount}
-                  onCopy={onCopied}
-                >
-                  <ClipboardGroup>
-                    {copied ? <BsCheck2Circle /> : <FiCopy />}&nbsp;&nbsp;
-
-                    <p>{copied ? "Copied" : "Copy Address"}</p>
-                  </ClipboardGroup>
-                </CopyToClipboard>
-              </Helper>
-            </HelperItem>
-            <HelperItem>
-              <Helper>
-                <HiExternalLink />&nbsp;&nbsp;View on Explorer
-              </Helper>
-            </HelperItem>
-          </HelperGroup>
-        </DetailsGroupModal>
-      </ContainerModal>
-    </Modal>
-  )
 }
 
 const Header = () => {
