@@ -5,5 +5,5 @@ cd /home/ec2-user/server
 # pm2 startup
 # pm2 save
 # pm2 restart all
-yarn build
+# yarn build
 yarn start
