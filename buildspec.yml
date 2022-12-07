@@ -12,7 +12,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Compiling
-      - npm run build
+      - yarn build
   post_build:
     commands:
       - echo Build completed on `date`
@@ -20,7 +20,8 @@ phases:
 artifacts:
   files:
     - public/**/*
-    - src/**/*
+    - .next/**/*
+    - public/**/*
     - package.json
     - appspec.yml
     - scripts/**/*

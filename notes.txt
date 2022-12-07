@@ -11,3 +11,6 @@ You need s3:CopyObject permissions to perform this action. Learn more about Iden
 arn:aws:iam::077672376922:role/CodeDeployRole
 //
 172.31.0.0/16	local
+//
+ssh -i "swap-token-app-keypair.pem" ec2-user@ec2-13-212-202-55.ap-southeast-1.compute.amazonaws.com
+//
