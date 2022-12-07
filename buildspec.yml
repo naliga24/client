@@ -34,3 +34,8 @@ artifacts:
     - styles/**/*
     - theme/**/*
     - utils/**/*
+    - next.config.js
+    - postcss.config.js
+    - next-env.d.ts
+    - tailwind.config.js
+    - tsconfig.json
