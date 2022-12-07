@@ -2,3 +2,12 @@
 0.010974 USDT
 //
 0x64de3a9985f0df89fe626fb0cd97d35198661698eb3fef6ac22f07db075e32bf
+//
+
+arn:aws:kms:ap-southeast-1:077672376922:key/36bbb050-720e-4caf-97b3-b292832b8518
+//
+You need s3:CopyObject permissions to perform this action. Learn more about Identity and Access Management in Amazon S3 
+//Service role
+arn:aws:iam::077672376922:role/CodeDeployRole
+//
+172.31.0.0/16	local

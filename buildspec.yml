@@ -24,3 +24,12 @@ artifacts:
     - package.json
     - appspec.yml
     - scripts/**/*
+    - api/**/*
+    - asssets/**/*
+    - components/**/*
+    - context/**/*
+    - lib/**/*
+    - pages/**/*
+    - styles/**/*
+    - theme/**/*
+    - utils/**/*
