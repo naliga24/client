@@ -11,7 +11,6 @@ import { AiOutlineDown } from 'react-icons/ai'
 import {
   HiOutlineDotsVertical,
 } from 'react-icons/hi'
-// import ethLogo from '../../assets/eth.png'
 import uniswapLogo from '../../assets/uniswap.png'
 import { useContext } from 'react'
 import { TransactionContext } from '../../context/TransactionContext'
@@ -46,13 +45,10 @@ const style = {
 const Header = () => {
   const [selectedNav, setSelectedNav] = useState('swap');
   const [userName, setUserName] = useState();
-  //const [currentNetworkItem, setCurrentNetworkItem] = useState({});
   const {
     connectWalletWeb3,
     currentAccount,
-    //logOutMoralis, 
     clearCurrentAccount,
-    //updateCurrentNetwork,
     currentNetwork,
     changeNetwork,
   } = useContext(TransactionContext)
@@ -66,7 +62,6 @@ const Header = () => {
   };
 
   const handleClose = (network) => {
-    console.log("network=>", network);
     setAnchorEl(null);
     if (network) {
       updateNetwork(network);
@@ -84,8 +79,6 @@ const Header = () => {
 
 
   useEffect(() => {
-    console.log("window=>", window.location.pathname);
-    //if (typeof window == "undefined") return;
     if (currentAccount) {
       (async () => {
         const query = `
@@ -105,13 +98,6 @@ const Header = () => {
       })()
     }
   }, [currentAccount])
-
-  // eslint-disable-next-line no-unused-vars
-  // const disconnectMoralis = () => {
-  //   logOutMoralis();
-  //   clearCurrentAccount();
-  //   setOpen(false);
-  // }
 
   const disconnectWeb3 = () => {
     clearCurrentAccount();
@@ -161,7 +147,7 @@ const Header = () => {
             >
               <Link
                 href={{
-                  pathname: "/tokens",
+                  // pathname: "/tokens",
                   query: {},
                 }}
               >
@@ -182,7 +168,6 @@ const Header = () => {
         <div className={style.buttonsContainer}>
           <div className={`${style.button} ${style.buttonPadding}`} onClick={handleClickNetwork}>
             <div className={style.buttonIconContainer}>
-              {/* <Image src={ethLogo} alt='eth logo' height={20} width={20} /> */}
               <NetworkLogo src={getNetworkMenu() ? getNetworkMenu().logoURI : ''} />
             </div>
             <p>{getNetworkMenu() ? getNetworkMenu().network : ''}</p>

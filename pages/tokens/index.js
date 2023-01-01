@@ -3,8 +3,6 @@ import React, { useEffect } from 'react';
 import { getAllTokens } from "../../api/token";
 
 export default function Tokens(props) {
-  console.log("Tokens=>", props);
-
   useEffect(() => {
     callGetAllTokensCoinMarketCap();
   }, [])
@@ -34,14 +32,6 @@ export async function getStaticProps(context) {
   return {
     props: {
       data: "kwan",
-    }, // will be passed to the page component as props
+    },
   }
 }
-
-// export async function getStaticPaths(context) {
-//   console.log("getStaticPaths=>", context);
-//   return {
-//     paths: [],
-//     fallback: false
-// }
-// }

@@ -1,5 +1,5 @@
-0.59545218 DAI
-0.010974 USDT
+0.36545 DAI
+0.24057 USDT
 //
 0x64de3a9985f0df89fe626fb0cd97d35198661698eb3fef6ac22f07db075e32bf
 //
@@ -17,4 +17,6 @@ ssh -i "swap-token-app-keypair.pem" ec2-user@ec2-13-212-202-55.ap-southeast-1.co
 sudo lsof -i :3000
 //kill by pid
 kill -9 {PID}
+// fix read only error (run this cmd on windows cmd)
+SFC /scannow
 //

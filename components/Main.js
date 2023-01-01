@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import { RiSettings3Fill } from 'react-icons/ri'
 import { AiOutlineDown } from 'react-icons/ai'
-// import ethLogo from '../assets/eth.png'
 import { useContext, useEffect, useState, useMemo } from 'react'
 import { TransactionContext } from '../context/TransactionContext'
 import Modal from 'react-modal'
@@ -9,13 +8,14 @@ import { ethers } from "ethers";
 import { useRouter } from 'next/router'
 import TransactionLoader from './TransactionLoader'
 import { 
-  //swapToken, 
   swapTokensAvailable, 
   quotePrice, 
   getTransactionApprove,
   getTransactionSwap,
 } from '../api/token';
 import { NETWORKS_AVAILABLE } from '../utils/constants'
+import SearchIcon from '@mui/icons-material/Search';
+
 import {
   IoIosArrowBackIcon,
   Paper,
@@ -32,14 +32,6 @@ import {
   Input,
 } from "./main.style"
 
-//import { Paper, InputBase, Divider, IconButton } from '@mui/material';
-// import InputBase from '@mui/material/InputBase';
-// import Divider from '@mui/material/Divider';
-// import IconButton from '@mui/material/IconButton';
-// import { withTheme } from "styled-components/macro";
-//import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-//import DirectionsIcon from '@mui/icons-material/Directions';
 
 Modal.setAppElement('#__next')
 
@@ -83,18 +75,11 @@ const Main = () => {
   const [quote, setQuote] = useState({});
   const [totalGas, setTotalGas] = useState(0);
   const [tokenReceive, setTokenReceive] = useState('');
-  //const [loading, setLoading] = useState(false);
-  // const [toUnit, setToUnit] = useState('0');
-  //const [selectTokenType, setSelectTokenType] = useState('');
+
   const {
-    //formData, 
-    //handleChange,
     currentAccount,
     sendTransaction, 
-    //callSwapToken
     currentNetwork,
-    // sign,
-    // verify,
     setIsLoading,
     isLoading,
     colectFees,
@@ -102,42 +87,31 @@ const Main = () => {
     useContext(TransactionContext)
   const router = useRouter()
 
-  console.log("currentNetwork=>", currentNetwork);
-
   const setLoadingAll = (loading) => {
-    //setLoading(loading);
     setIsLoading(loading); 
   }
 
 
   const callSwapToken = async () => {
     try {
-      //const EtherToWei = ethers.utils.parseUnits("0.001", 18);
-      //ethers.utils.formatUnits()
       setLoadingAll(true);
-      const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex));
+      const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex))
       const chainId = currentNetwork.chainId;
       const web3RpcUrl = getNetworkData(chainId);
       const paramsFees = { chainId, walletAddress: currentAccount, value: totalGas };
       const paramsApprove = { fromToken: selectFromToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
       const paramsSwap = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
       await colectFees(paramsFees).then(async(txFee)=>{
-        console.log("txFee=>", txFee); 
         if(txFee){
           await getTransactionApprove(paramsApprove).then(async(txApprove)=>{
-            console.log("txApprove=>", txApprove);   
             const {data: {payload: payloadApprove={}}={}} = txApprove;
             payloadApprove.chainId = chainId;
             payloadApprove.from = currentAccount;
             await sendTransaction(payloadApprove).then(async(responseApprove)=>{
-              console.log("responseApprove=>", responseApprove);
               await getTransactionSwap(paramsSwap).then(async(txSwap)=>{
-                console.log("txSwap=>", txSwap);
                 const {data: {payload: payloadSwap={}}={}} = txSwap;
                 payloadSwap.chainId = chainId;
-                // payloadSwap.from = currentAccount;
                 await sendTransaction(payloadSwap).then(async(responseSwap)=>{
-                  console.log("call=>", responseSwap);
                   setLoadingAll(false);
                   clearData();
                 })
@@ -158,11 +132,9 @@ const Main = () => {
     try {
       const params = { chainId: currentNetwork.chainId };
       const response = await swapTokensAvailable(params);
-      console.log("response=>", response, response.data.payload);
       if (response && response.data && response.data.payload && response.data.payload.tokens && Object.values(response.data.payload.tokens).length) {
         const tokens = Object.values(response.data.payload.tokens);
         setAvailableSwapTokens(tokens);
-        console.log("tokens=>", tokens);
       }
     } catch (error) {
       console.log(error)
@@ -173,24 +145,17 @@ const Main = () => {
     try {
       const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex));
       const params = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId: currentNetwork.chainId };
-      console.log("callQuotePrice=>", params);
       const response = await quotePrice(params);
-      console.log("response=>", response, response.data.payload);
       if (response && response.data && response.data.payload) {
         const payload = response.data.payload;
         const estimatedGas = payload.estimatedGas;
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const gasPrice = await provider.getGasPrice();
-        //const network = await provider.getNetwork();
-        console.log("gasPrice=>", gasPrice);
-        //console.log("network=>", network);
         const totalGas = Number(gasPrice._hex) * Number(estimatedGas);
-        //const quote = Object.values(response.data.payload.tokens);
         setQuote(payload);
         setTotalGas(totalGas);
         const NETWORK = await provider.getNetwork()
         const feeData = await provider.getFeeData()
-        console.log("GAS PRICE=>", response, feeData, totalGas,Number(gasPrice._hex), ethers.utils.formatUnits(feeData.maxFeePerGas, "gwei"), ethers.utils.formatUnits(gasPrice, "gwei"), NETWORK, Number(estimatedGas));
       }
     } catch (error) {
       console.log(error)
@@ -198,12 +163,6 @@ const Main = () => {
   }
 
   const handleSubmit = async () => {
-    // const { addressTo, amount } = formData
-    // e.preventDefault()
-
-    // if (!addressTo || !amount) return
-
-    //sendTransaction()
     callSwapToken();
   }
 
@@ -227,9 +186,7 @@ const Main = () => {
   }
 
   const setTokenWillReceive = () => {
-    console.log("getTokenReceive=>", quote);
     if (quote && quote.toTokenAmount && quote.toToken && quote.toToken.decimals) {
-      console.log("getTokenReceive=>", quote.toTokenAmount, quote.toToken.decimals);
       const receive = String(ethers.utils.formatUnits(quote.toTokenAmount, quote.toToken.decimals));
       setTokenReceive(receive);
     }
@@ -265,7 +222,6 @@ const Main = () => {
             key={row.address}
             sx={{ 'th': { border: 0 }, cursor: 'pointer', '&:hover': { background: 'rgba(201, 208, 231, 0.08)' } }}
             onClick={() => {
-              console.log("in00", selectType, row);
               if (selectType === 'from') {
                 setSelectFromToken(row);
               } else if (selectType === 'to') {
@@ -316,14 +272,12 @@ const Main = () => {
 
   return (
     <div className={style.wrapper} onClick={() => {
-      console.log("out");
       setSelectType('');
       setTokenFilter('');
     }}>
       {
         !selectType ?
           <div className={style.content} onClick={(e) => {
-            console.log("in0");
             e.preventDefault();
             e.stopPropagation();
           }}>
@@ -340,17 +294,12 @@ const Main = () => {
                 placeholder='0.0'
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 onChange={e => {
-                  console.log("onChange=>", e.target.value);
                   setUnit(e.target.value);
                 }}
                 value={unit}
               />
               <div className={style.currencySelector} onClick={() => {
-                console.log("from");
                 setSelectType('from');
-                //setSelectTokenType('from')
-                // e.preventDefault();
-                // e.stopPropagation();
               }}>
                 <div className={style.currencySelectorContent}>
                   <div className={style.currencySelectorIcon}>
@@ -368,17 +317,9 @@ const Main = () => {
                 placeholder='0.0'
                 disabled
                 value={tokenReceive}
-              // onChange={e => {
-              //   console.log("e=>", e.target.value * 1, typeof (e.target.value));
-              //   setToUnit(e.target.value);
-              // }}
               />
               <div className={style.currencySelector} onClick={() => {
-                console.log("to");
                 setSelectType('to');
-                //setSelectTokenType('to')
-                // e.preventDefault();
-                // e.stopPropagation();
               }}>
                 <div className={style.currencySelectorContent}>
                   <div className={style.currencySelectorIcon}>
@@ -398,7 +339,6 @@ const Main = () => {
           </div>
           :
           <div className={style.content} onClick={(e) => {
-            console.log("in0");
             e.preventDefault();
             e.stopPropagation();
           }}>
@@ -421,7 +361,6 @@ const Main = () => {
                 placeholder="Search by name or paste address"
                 inputProps={{ 'aria-label': 'search token name or address' }}
                 onChange={(e) => {
-                  console.log("e=>", e.target.value);
                   setTokenFilter(e.target.value);
                 }}
               />

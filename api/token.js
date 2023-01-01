@@ -13,7 +13,6 @@ const getAllTokens = async () => {
         },
       }
     );
-    // console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -30,7 +29,6 @@ const getAllTokensCoinMarketCap = async () => {
       },
     });
 
-    console.log("response0=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -48,7 +46,6 @@ const getTokenMetadata = async () => {
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -68,7 +65,6 @@ const swapToken = async ({ fromToken, toToken, walletAddress, amount, chainId, w
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -86,7 +82,6 @@ const swapTokensAvailable = async ({ chainId }) => {
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -106,7 +101,6 @@ const quotePrice = async ({ fromToken, toToken, walletAddress, amount, chainId }
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -126,7 +120,6 @@ const getTransactionApprove = async ({ fromToken, walletAddress, amount, chainId
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -146,7 +139,6 @@ const getTransactionSwap = async ({ fromToken, toToken, walletAddress, amount, c
         },
       }
     );
-    console.log("response=>", response);
     return response;
   } catch (err) {
     console.log(err);
