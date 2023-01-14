@@ -75,7 +75,7 @@ export const TransactionProvider = ({ children }) => {
         params: [{ chainId: newNetwork.changeNetworkParam.chainId }],
       });
     } catch (error) {
-      const changeNetwork = await metamask.request({
+      await metamask.request({
         method: 'wallet_addEthereumChain',
         params: [newNetwork.changeNetworkParam]
       });
@@ -115,12 +115,12 @@ export const TransactionProvider = ({ children }) => {
   const colectFees = async (transaction) => {
     try {
       if (!eth) return alert('Please install metamask ')
-      const { 
-        walletAddress, 
-        value, 
+      const {
+        walletAddress,
+        value,
         chainId,
       } = transaction;
-     const response = await eth.request({
+      const response = await eth.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -137,17 +137,17 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
-    const sendTransaction = async (
+  const sendTransaction = async (
     transaction,
   ) => {
     try {
       if (!eth) return alert('Please install metamask ')
-     const { data, gasPrice, gas, to, from, value, chainId } = transaction;
-     const response = await eth.request({
+      const { data, gasPrice, gas, to, from, value, chainId } = transaction;
+      const response = await eth.request({
         method: 'eth_sendTransaction',
         params: [
           {
-            gasPrice: ethers.utils.hexlify(parseInt(gasPrice)), 
+            gasPrice: ethers.utils.hexlify(parseInt(gasPrice)),
             gas: ethers.utils.hexlify(gas),
             to,
             from,
@@ -176,6 +176,7 @@ export const TransactionProvider = ({ children }) => {
     eth.on('accountsChanged', function (accounts) {
       setCurrentAccount(accounts[0]);
     });
+    // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {
       setCurrentNetwork(newNetwork);
     });

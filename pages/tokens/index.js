@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 //import Layout from "../../components/layout";
 import { getAllTokens } from "../../api/token";
 
-export default function Tokens(props) {
+export default function Tokens() {
   useEffect(() => {
     callGetAllTokensCoinMarketCap();
   }, [])
@@ -23,7 +23,7 @@ export default function Tokens(props) {
       <h2>Tokens</h2>
       <p>This is Tokens page.</p>
     </div>
-   // </Layout>
+    // </Layout>
   );
 }
 

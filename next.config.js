@@ -20,7 +20,7 @@ module.exports = withPWA({
     BACKEND_BASE_URL: process.env.NODE_ENV === 'development' ? "http://localhost:3031/api/v1" : "https://api.dev.swap.com/api/v1",
   },
   eslint: {
-    dirs: ['pages', 'context', 'api', 'components', 'theme', 'lib'], // Only run ESLint on the 'pages' and 'utils' directories during production builds (next build)
+    dirs: ['pages', 'context', 'api', 'components', 'theme', 'lib'], // Only run ESLint on directories during production builds (next build)
   },
   compiler: {
     // ssr and displayName are configured by default

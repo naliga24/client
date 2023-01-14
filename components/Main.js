@@ -7,9 +7,9 @@ import Modal from 'react-modal'
 import { ethers } from "ethers";
 import { useRouter } from 'next/router'
 import TransactionLoader from './TransactionLoader'
-import { 
-  swapTokensAvailable, 
-  quotePrice, 
+import {
+  swapTokensAvailable,
+  quotePrice,
   getTransactionApprove,
   getTransactionSwap,
 } from '../api/token';
@@ -78,7 +78,7 @@ const Main = () => {
 
   const {
     currentAccount,
-    sendTransaction, 
+    sendTransaction,
     currentNetwork,
     setIsLoading,
     isLoading,
@@ -88,7 +88,7 @@ const Main = () => {
   const router = useRouter()
 
   const setLoadingAll = (loading) => {
-    setIsLoading(loading); 
+    setIsLoading(loading);
   }
 
 
@@ -101,17 +101,17 @@ const Main = () => {
       const paramsFees = { chainId, walletAddress: currentAccount, value: totalGas };
       const paramsApprove = { fromToken: selectFromToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
       const paramsSwap = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
-      await colectFees(paramsFees).then(async(txFee)=>{
-        if(txFee){
-          await getTransactionApprove(paramsApprove).then(async(txApprove)=>{
-            const {data: {payload: payloadApprove={}}={}} = txApprove;
+      await colectFees(paramsFees).then(async (txFee) => {
+        if (txFee) {
+          await getTransactionApprove(paramsApprove).then(async (txApprove) => {
+            const { data: { payload: payloadApprove = {} } = {} } = txApprove;
             payloadApprove.chainId = chainId;
             payloadApprove.from = currentAccount;
-            await sendTransaction(payloadApprove).then(async(responseApprove)=>{
-              await getTransactionSwap(paramsSwap).then(async(txSwap)=>{
-                const {data: {payload: payloadSwap={}}={}} = txSwap;
+            await sendTransaction(payloadApprove).then(async () => {
+              await getTransactionSwap(paramsSwap).then(async (txSwap) => {
+                const { data: { payload: payloadSwap = {} } = {} } = txSwap;
                 payloadSwap.chainId = chainId;
-                await sendTransaction(payloadSwap).then(async(responseSwap)=>{
+                await sendTransaction(payloadSwap).then(async () => {
                   setLoadingAll(false);
                   clearData();
                 })
@@ -154,8 +154,6 @@ const Main = () => {
         const totalGas = Number(gasPrice._hex) * Number(estimatedGas);
         setQuote(payload);
         setTotalGas(totalGas);
-        const NETWORK = await provider.getNetwork()
-        const feeData = await provider.getFeeData()
       }
     } catch (error) {
       console.log(error)
