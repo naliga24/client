@@ -7,7 +7,8 @@ phases:
   pre_build:
     commands:
       #installs dependencies into the node_modules/ directory
-      - npm install
+      - npm install -f
+      - npm install next -g
   build:
     commands:
       - echo Build started on `date`

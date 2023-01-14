@@ -6,6 +6,7 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/server
+    overwrite: true
 
 permissions:
   - object: /
