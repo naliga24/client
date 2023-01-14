@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/ec2-user/server
+cd /home/ec2-user/server/src
 npm start
 pm2 start npm --name "swaptokenapp" -- start
 pm2 startup
