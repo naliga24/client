@@ -21,7 +21,6 @@ artifacts:
   files:
     - public/**/*
     - .next/**/*
-    - public/**/*
     - package.json
     - appspec.yml
     - scripts/**/*
@@ -39,3 +38,5 @@ artifacts:
     - next-env.d.ts
     - tailwind.config.js
     - tsconfig.json
+    - .eslintrc.json
+    - .eslintignore
