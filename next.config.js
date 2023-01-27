@@ -17,7 +17,7 @@ module.exports = withPWA({
   env: {
     // MORALIS_APP_ID: "YWZn3WQiCiWCJSqkMpjU1JdrwiDaXrQTFjKEpSIY",
     // MORALIS_SERVER_URL: "https://pxlcw9zmhyxv.usemoralis.com:2053/server",
-    BACKEND_BASE_URL: process.env.NODE_ENV === 'development' ? "http://localhost:3031/api/v1" : "http://18.140.251.221:3031/api/v1",
+    BACKEND_BASE_URL: process.env.NODE_ENV === 'development' ? "http://localhost:3031/api/v1" : "https://www.api.3ether.io",
   },
   eslint: {
     dirs: ['pages', 'context', 'api', 'components', 'theme', 'lib'], // Only run ESLint on directories during production builds (next build)
