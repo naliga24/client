@@ -53,7 +53,7 @@ const NETWORKS_AVAILABLE = [
                 symbol: "MATIC",
                 decimals: 18
             },
-            blockExplorerUrls: ["https://polygonscan.com/"]
+            blockExplorerUrls: ["https://polygonscan.com"]
         }
     },
     {
@@ -71,7 +71,7 @@ const NETWORKS_AVAILABLE = [
                 symbol: "ETH",
                 decimals: 18
             },
-            blockExplorerUrls: ["https://optimistic.etherscan.io/"]
+            blockExplorerUrls: ["https://optimistic.etherscan.io"]
         }
     },
     {
@@ -90,7 +90,7 @@ const NETWORKS_AVAILABLE = [
                 symbol: "ETH",
                 decimals: 18
             },
-            blockExplorerUrls: ["https://arbiscan.io/"]
+            blockExplorerUrls: ["https://arbiscan.io"]
         }
     },
     {
@@ -108,7 +108,7 @@ const NETWORKS_AVAILABLE = [
                 symbol: "xDAI",
                 decimals: 18
             },
-            blockExplorerUrls: ["https://gnosisscan.io/"]
+            blockExplorerUrls: ["https://gnosisscan.io"]
         }
     },
     {
@@ -189,7 +189,10 @@ const NETWORKS_AVAILABLE = [
     },
 ];
 
+const SUPPORTED_CHAIN_IDS = NETWORKS_AVAILABLE.map(network=>network.chainId)
+
 
 export {
     NETWORKS_AVAILABLE,
+    SUPPORTED_CHAIN_IDS,
 };

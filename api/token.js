@@ -127,11 +127,11 @@ const getTransactionApprove = async ({ fromToken, walletAddress, amount, chainId
   }
 };
 
-const getTransactionSwap = async ({ fromToken, toToken, walletAddress, amount, chainId }) => {
+const getTransactionSwap = async ({ fromToken, toToken, walletAddress, destReceiver, amount, chainId }) => {
   try {
     const response = await axios.post(
       '/token/getTransactionSwap', {
-      fromToken, toToken, walletAddress, amount, chainId
+      fromToken, toToken, walletAddress, destReceiver, amount, chainId
     },
       {
         validateStatus: function () {

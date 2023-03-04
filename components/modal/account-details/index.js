@@ -1,7 +1,6 @@
 import React,{
-    useState,
+    useState, useContext,
   } from 'react'
-
  import { 
     FiCopy 
 } from 'react-icons/fi'
@@ -9,8 +8,9 @@ import { BsCheck2Circle } from 'react-icons/bs'
 import { 
     HiExternalLink } from 'react-icons/hi'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-
+import { NETWORKS_AVAILABLE } from '../../../utils/constants';
 import Modal from 'react-modal'
+import { TransactionContext } from '../../../context/TransactionContext'
 
 Modal.setAppElement('#__next')
 
@@ -50,8 +50,14 @@ const customStyles = {
     setOpen,
     userName,
     currentAccount,
+    currentNetwork,
     disconnect,
   }) => {
+    const {
+      provider,
+    } =
+      useContext(TransactionContext)
+
     const [copied, setCopied] = useState(false)
   
     const onCopied = () => {
@@ -60,6 +66,10 @@ const customStyles = {
         setCopied(false)
       }, 1000);
     }
+
+    const getNetworkMenu = () => {
+      return NETWORKS_AVAILABLE.find((network) => network.chainId === currentNetwork.chainId);
+    };
   
     return (
       <Modal isOpen={isOpen} onRequestClose={() => setOpen()} style={customStyles}>
@@ -70,10 +80,12 @@ const customStyles = {
           <DetailsGroupModal>
             <DisconnectGroup>
               <ConnectWith>
-                Connected with MetaMask
+                Connected with {provider}
               </ConnectWith>
               <DisconnectButton
-                onClick={() => disconnect()}
+                onClick={() => {
+                  disconnect();
+                }}
               >
                 Disconnect
               </DisconnectButton>
@@ -97,7 +109,11 @@ const customStyles = {
                 </Helper>
               </HelperItem>
               <HelperItem>
-                <Helper>
+                <Helper
+                 href={`${getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}/address/${currentAccount}`}
+                 target='_blank'
+                 rel='noreferrer'
+                >
                   <HiExternalLink />&nbsp;&nbsp;View on Explorer
                 </Helper>
               </HelperItem>

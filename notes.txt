@@ -19,4 +19,6 @@ sudo lsof -i :3000
 kill -9 {PID}
 // fix read only error (run this cmd on windows cmd)
 SFC /scannow
+//old eth account
+0x596267Ad683923f9c00ECB51F810C429c5CFE7ea
 //

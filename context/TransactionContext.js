@@ -5,14 +5,36 @@ import { useRouter } from 'next/router'
 
 export const TransactionContext = React.createContext()
 
+const activateInjectedProvider = (providerName, eth)=> {
+
+  if (!eth?.providers) {
+      return undefined;
+  }
+
+  let provider;
+  switch (providerName) {
+      case 'CoinBase':
+          provider = eth.providers.find(({ isCoinbaseWallet }) => isCoinbaseWallet);
+          break;
+      case 'MetaMask':
+          provider = eth.providers.find(({ isMetaMask }) => isMetaMask);
+          break;
+  }
+
+  if (provider) {
+    eth.setSelectedProvider(provider);
+  }
+}
+
 let eth
 
 if (typeof window !== 'undefined') {
-  eth = window.ethereum
+ eth = window.ethereum
+  console.log("window", eth);
 }
 
 const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const provider = new ethers.providers.Web3Provider(eth)
   const signer = provider.getSigner()
   const transactionContract = new ethers.Contract(
     contractAddress,
@@ -27,19 +49,23 @@ export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState("")
   const [currentNetwork, setCurrentNetwork] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const [provider, setProvider] = useState("")
   const router = useRouter()
 
-  const clearCurrentAccount = () => {
+  const disconnect = () => {
     setCurrentAccount("");
+    //localStorage.clear();
   }
 
-
-  const checkIfWalletIsConnectedWeb3 = async (metamask = eth) => {
+  const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-      if (!metamask) return alert('Please install metamask ')
-      const accounts = await metamask.request({ method: 'eth_accounts' })
-      if (accounts) {
+      if (!eth) return;
+      let accounts = [];
+       accounts = await eth.request({ method: 'eth_accounts' })
+      if (accounts && accounts?.length) {
         setCurrentAccount(accounts[0])
+      } else {
+        setCurrentAccount("");
       }
     } catch (error) {
       console.error(error)
@@ -48,7 +74,7 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedNetwork = async () => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const provider = new ethers.providers.Web3Provider(eth)
       const network = await provider.getNetwork();
       setCurrentNetwork(network);
     } catch (error) {
@@ -56,10 +82,13 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
-  const connectWalletWeb3 = async (metamask = eth) => {
+  const connectWalletWeb3 = async () => {
     try {
-      if (!metamask) return alert('Please install metamask ')
-      const accounts = await metamask.request({ method: 'eth_requestAccounts' })
+      if (!eth) {
+        alert("Please add metamask extension");
+        return;
+      }
+      const accounts = await eth.request({ method: 'eth_requestAccounts' })
       setCurrentAccount(accounts[0])
     } catch (error) {
       console.error(error)
@@ -67,15 +96,19 @@ export const TransactionProvider = ({ children }) => {
   }
 
   const changeNetwork = async (newNetwork) => {
-    const metamask = eth;
     try {
-      if (!metamask) return alert('Please install metamask ')
-      await metamask.request({
+      console.log("request", eth, currentAccount, newNetwork);
+      if (!eth || !currentAccount) {
+      setCurrentNetwork(newNetwork);
+        return;
+      }
+      await eth.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: newNetwork.changeNetworkParam.chainId }],
       });
     } catch (error) {
-      await metamask.request({
+      console.log("error", error, newNetwork, eth);
+      await eth.request({
         method: 'wallet_addEthereumChain',
         params: [newNetwork.changeNetworkParam]
       });
@@ -84,7 +117,7 @@ export const TransactionProvider = ({ children }) => {
 
   const sign = async (msg) => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(eth);
       const message = msg;
       const signer = provider.getSigner();
       const signature = await signer.signMessage(message);
@@ -114,7 +147,7 @@ export const TransactionProvider = ({ children }) => {
 
   const colectFees = async (transaction) => {
     try {
-      if (!eth) return alert('Please install metamask ')
+      if (!eth) return;
       const {
         walletAddress,
         value,
@@ -141,8 +174,9 @@ export const TransactionProvider = ({ children }) => {
     transaction,
   ) => {
     try {
-      if (!eth) return alert('Please install metamask ')
+      if (!eth) return;
       const { data, gasPrice, gas, to, from, value, chainId } = transaction;
+
       const response = await eth.request({
         method: 'eth_sendTransaction',
         params: [
@@ -172,12 +206,15 @@ export const TransactionProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+    if(!eth) return;
+    const provider = new ethers.providers.Web3Provider(eth, "any")
     eth.on('accountsChanged', function (accounts) {
+      console.log("accountsChanged");
       setCurrentAccount(accounts[0]);
     });
     // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {
+      console.log("network", newNetwork);
       setCurrentNetwork(newNetwork);
     });
   }, [])
@@ -197,14 +234,17 @@ export const TransactionProvider = ({ children }) => {
         currentAccount,
         sendTransaction,
         isLoading,
-        clearCurrentAccount,
+        provider,
+        disconnect,
         getEthereumContract,
         currentNetwork,
         changeNetwork,
         sign,
         verify,
         setIsLoading,
+        setProvider,
         colectFees,
+        activateInjectedProvider,
       }}
     >
       {children}

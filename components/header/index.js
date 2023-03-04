@@ -8,15 +8,12 @@ import {
   FiArrowUpRight,
 } from 'react-icons/fi'
 import { AiOutlineDown } from 'react-icons/ai'
-import {
-  HiOutlineDotsVertical,
-} from 'react-icons/hi'
 import uniswapLogo from '../../assets/uniswap.png'
 import { useContext } from 'react'
 import { TransactionContext } from '../../context/TransactionContext'
-import { client } from '../../lib/sanityClient'
 import Link from 'next/link'
 import ModalAccount from "../modal/account-details"
+import ModalWallet from "../modal/connect-wallet"
 import { NETWORKS_AVAILABLE } from '../../utils/constants';
 
 import {
@@ -39,20 +36,20 @@ const style = {
   buttonPadding: `p-2`,
   buttonTextContainer: `h-8 flex items-center`,
   buttonIconContainer: `flex items-center justify-center w-8 h-8`,
-  buttonAccent: `bg-[#172A42] border border-[#163256] hover:border-[#234169] h-full rounded-2xl flex items-center justify-center text-[#4F90EA]`,
+  buttonAccent: `bg-[#172A42] border border-[#163256] hover:border-[#234169] h-full rounded-2xl flex items-center justify-center text-[#4F90EA] text-center`,
 }
 
 const Header = () => {
   const [selectedNav, setSelectedNav] = useState('swap');
   const [userName, setUserName] = useState();
   const {
-    connectWalletWeb3,
     currentAccount,
-    clearCurrentAccount,
+    disconnect,
     currentNetwork,
     changeNetwork,
   } = useContext(TransactionContext)
-  const [open, setOpen] = useState(false)
+  const [openAccount, setOpenAccount] = useState(false)
+  const [openWallet, setOpenWallet] = useState(false)
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openNetwork = Boolean(anchorEl);
@@ -61,16 +58,8 @@ const Header = () => {
     setAnchorEl(e.currentTarget);
   };
 
-  const handleClose = (network) => {
+  const handleClose = () => {
     setAnchorEl(null);
-    if (network) {
-      updateNetwork(network);
-    }
-  };
-
-  const updateNetwork = () => {
-    //setCurrentNetworkItem(network);
-    //updateCurrentNetwork(network);
   };
 
   const getNetworkMenu = () => {
@@ -80,33 +69,21 @@ const Header = () => {
 
   useEffect(() => {
     if (currentAccount) {
-      (async () => {
-        const query = `
-        *[_type=="users" && _id == "${currentAccount}"] {
-          userName,
-        }
-        `
-        const clientRes = await client.fetch(query)
-
-        if (!(clientRes[0].userName == 'Unnamed')) {
-          setUserName(clientRes[0].userName)
-        } else {
-          setUserName(
-            `${currentAccount.slice(0, 7)}...${currentAccount.slice(35)}`,
-          )
-        }
-      })()
+      setUserName(
+        `${currentAccount.slice(0, 7)}...${currentAccount.slice(35)}`,
+      )
     }
   }, [currentAccount])
 
   const disconnectWeb3 = () => {
-    clearCurrentAccount();
-    setOpen(false);
+    disconnect();
+    setOpenAccount(false);
   }
 
   return (
     <Fragment>
-      <ModalAccount isOpen={open} userName={userName} currentAccount={currentAccount} setOpen={() => setOpen(false)} disconnect={() => disconnectWeb3()} />
+      <ModalAccount isOpen={openAccount} userName={currentAccount} currentAccount={currentAccount} currentNetwork={currentNetwork} setOpen={() => setOpenAccount(false)} disconnect={() => disconnectWeb3()} />
+      <ModalWallet isOpen={openWallet} userName={currentAccount} currentAccount={currentAccount} currentNetwork={currentNetwork} setOpen={() => setOpenWallet(false)} disconnect={() => disconnectWeb3()} />
       <div className={style.wrapper}>
         <div className={style.headerLogo}>
           <Image src={uniswapLogo} alt='uniswap' height={40} width={40} />
@@ -125,42 +102,32 @@ const Header = () => {
               </Link>
             </div>
             <div
-              onClick={() => setSelectedNav('pool')}
-              className={`${style.navItem} ${selectedNav === 'pool' && style.activeNavItem
-                }`}
+              //onClick={() => setSelectedNav('pool')}
+              className={`${style.navItem} ${selectedNav === 'pool' && style.activeNavItem} cursor-not-allowed`}
             >
               Pool
             </div>
             <div
-              onClick={() => setSelectedNav('vote')}
-              className={`${style.navItem} ${selectedNav === 'vote' && style.activeNavItem
-                }`}
+              //onClick={() => setSelectedNav('vote')}
+              className={`${style.navItem} ${selectedNav === 'vote' && style.activeNavItem} cursor-not-allowed`}
             >
               Vote
             </div>
             <div
               onClick={() => {
-                setSelectedNav('tokens')
+                //setSelectedNav('tokens')
               }}
-              className={`${style.navItem} ${selectedNav === 'tokens' && style.activeNavItem
-                }`}
+              className={`${style.navItem} ${selectedNav === 'tokens' && style.activeNavItem} cursor-not-allowed`}
             >
-              <Link
-                href={{
-                  // pathname: "/tokens",
-                  query: {},
-                }}
-              >
-                Tokens
-              </Link>
+             Tokens
             </div>
             <a
-              href='https://info.uniswap.org/#/'
+              href={getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
               target='_blank'
               rel='noreferrer'
             >
               <div className={style.navItem}>
-                Charts <FiArrowUpRight />
+                Explorer <FiArrowUpRight />
               </div>
             </a>
           </div>
@@ -196,14 +163,17 @@ const Header = () => {
               <div
                 className={style.buttonTextContainer}
                 onClick={() => {
-                  setOpen(true);
+                  setOpenAccount(true);
                 }}
               >{userName}
               </div>
             </div>
           ) : (
             <div
-              onClick={() => connectWalletWeb3()}
+              onClick={() => {
+                //connectWalletWeb3();
+                setOpenWallet(true);
+              }}
               className={`${style.button} ${style.buttonPadding}`}
             >
               <div className={`${style.buttonAccent} ${style.buttonPadding}`}>
@@ -211,11 +181,11 @@ const Header = () => {
               </div>
             </div>
           )}
-          <div className={`${style.button} ${style.buttonPadding}`}>
-            <div className={`${style.buttonIconContainer} mx-2`}>
+          {/* <div className={`${style.button} ${style.buttonPadding}`}>
+            <div className={`${style.buttonIconContainer} mx-2 cursor-not-allowed`}>
               <HiOutlineDotsVertical />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </Fragment>

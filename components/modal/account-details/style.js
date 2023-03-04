@@ -45,7 +45,7 @@ export const DisconnectGroup = styled.div`
   align-items: baseline;
 `;
 
-export const ConnectWith = styled.span`
+export const ConnectWith = styled.a`
   font-size: 0.825rem;
   font-weight: 500;
   color: rgb(143, 150, 172);
