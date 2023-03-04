@@ -62,7 +62,9 @@ export const TransactionProvider = ({ children }) => {
     try {
       if (!eth) return;
       let accounts = [];
+      console.log("checkIfWalletIsConnectedWeb3", accounts);
        accounts = await eth.request({ method: 'eth_accounts' })
+       console.log("checkIfWalletIsConnectedWeb30", accounts);
       if (accounts && accounts?.length) {
         setCurrentAccount(accounts[0])
       } else {
@@ -89,8 +91,10 @@ export const TransactionProvider = ({ children }) => {
         alert("Please add metamask extension");
         return;
       }
-      const accounts = await eth.request({ method: 'eth_requestAccounts' })
-      setCurrentAccount(accounts[0])
+      const accounts = await eth.request({ method: 'eth_requestAccounts' });
+      if(accounts && accounts?.length){
+        setCurrentAccount(accounts[0]);
+      } 
     } catch (error) {
       console.error(error)
     }
