@@ -21,4 +21,6 @@ kill -9 {PID}
 SFC /scannow
 //old eth account
 0x596267Ad683923f9c00ECB51F810C429c5CFE7ea
+//To remove from git but still have on locally.
+git rm yarn.lock --cached
 //
