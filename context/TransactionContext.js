@@ -30,7 +30,7 @@ let eth
 
 if (typeof window !== 'undefined') {
  eth = window.ethereum
- activateInjectedProvider('MetaMask', eth);
+ // activateInjectedProvider('MetaMask', eth);
   console.log("window", eth);
 }
 
