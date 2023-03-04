@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from '../header'
-import TransactionHistory from '../TransactionHistory'
 import { Wrapper } from "./style"
 
 const Layout = ({children}) => {
@@ -8,7 +7,6 @@ const Layout = ({children}) => {
     <Wrapper>
       <Header />
         {children}
-      <TransactionHistory />
     </Wrapper>
   )
 }

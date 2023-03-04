@@ -24,3 +24,4 @@ SFC /scannow
 //To remove from git but still have on locally.
 git rm yarn.lock --cached
 //
+We need  yarn.lock file to be build on aws Amplify
