@@ -37,7 +37,7 @@ export const TransactionProvider = ({ children }) => {
       if (!eth) return;
       let accounts = [];
       console.log("checkIfWalletIsConnectedWeb3", accounts);
-       accounts = await eth.request({ method: 'eth_accounts' })
+       accounts = await eth.request({ method: 'eth_accounts' });
        console.log("checkIfWalletIsConnectedWeb30", accounts);
       if (accounts && accounts?.length) {
         setCurrentAccount(accounts[0])
@@ -45,7 +45,7 @@ export const TransactionProvider = ({ children }) => {
         setCurrentAccount("");
       }
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -55,7 +55,7 @@ export const TransactionProvider = ({ children }) => {
       const network = await provider.getNetwork();
       setCurrentNetwork(network);
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -70,7 +70,7 @@ export const TransactionProvider = ({ children }) => {
         setCurrentAccount(accounts[0]);
       } 
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -107,7 +107,7 @@ export const TransactionProvider = ({ children }) => {
         address,
       };
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -120,7 +120,7 @@ export const TransactionProvider = ({ children }) => {
       return true;
 
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -145,7 +145,7 @@ export const TransactionProvider = ({ children }) => {
       })
       return response;
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
@@ -172,7 +172,7 @@ export const TransactionProvider = ({ children }) => {
       })
       return response;
     } catch (error) {
-      console.error(error)
+      console.error("err",error);
     }
   }
 
