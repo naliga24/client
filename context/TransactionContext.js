@@ -51,7 +51,8 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedNetwork = async () => {
     try {
-      const provider = new ethers.providers.Web3Provider(eth)
+      if (!eth) return;
+      const provider = new ethers.providers.Web3Provider(eth, "any")
       const network = await provider.getNetwork();
       setCurrentNetwork(network);
     } catch (error) {
@@ -206,6 +207,9 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     const getEth = async() =>{
     const providerDetect = await detectEthereumProvider();
+    if (providerDetect !== window.ethereum) {
+      console.error('Do you have multiple wallets installed?');
+    }
     setEth(providerDetect);
     }
     getEth();
