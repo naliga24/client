@@ -3,15 +3,22 @@ import { contractABI, contractAddress } from '../lib/constants'
 import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import detectEthereumProvider from '@metamask/detect-provider';
-
+import useAppDispatch from "../hooks/useAppDispatch";
+import useAppSelector from "../hooks/useAppSelector";
+import {
+  getEth,
+  setEth,
+} from "../redux/slices/authenticate";
 export const TransactionContext = React.createContext();
 
 export const TransactionProvider = ({ children }) => {
+  const dispatchStore = useAppDispatch();
+  const eth = useAppSelector(getEth);
+  
   const [currentAccount, setCurrentAccount] = useState("")
   const [currentNetwork, setCurrentNetwork] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [provider, setProvider] = useState("")
-  const [eth, setEth] = useState(null)
   const router = useRouter()
 
   const disconnect = () => {
@@ -208,10 +215,7 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     const getEth = async() =>{
     const providerDetect = await detectEthereumProvider();
-    if (providerDetect !== window.ethereum) {
-      console.error('Do you have multiple wallets installed?');
-    }
-    setEth(providerDetect);
+    dispatchStore(setEth(providerDetect));
     }
     getEth();
   }, [])
