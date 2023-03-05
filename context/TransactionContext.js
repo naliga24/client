@@ -2,60 +2,34 @@ import React, { useEffect, useState } from 'react'
 import { contractABI, contractAddress } from '../lib/constants'
 import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
+import detectEthereumProvider from '@metamask/detect-provider';
 
-export const TransactionContext = React.createContext()
-
-const activateInjectedProvider = (providerName, eth)=> {
-
-  if (!eth?.providers) {
-      return undefined;
-  }
-
-  let provider;
-  switch (providerName) {
-      case 'CoinBase':
-          provider = eth.providers.find(({ isCoinbaseWallet }) => isCoinbaseWallet);
-          break;
-      case 'MetaMask':
-          provider = eth.providers.find(({ isMetaMask }) => isMetaMask);
-          break;
-  }
-
-  if (provider) {
-    eth.setSelectedProvider(provider);
-  }
-}
-
-let eth
-
-if (typeof window !== 'undefined') {
- eth = window.ethereum
- // activateInjectedProvider('MetaMask', eth);
-  console.log("window", eth);
-}
-
-const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(eth)
-  const signer = provider.getSigner()
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer,
-  )
-
-  return transactionContract
-}
+export const TransactionContext = React.createContext();
 
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState("")
   const [currentNetwork, setCurrentNetwork] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [provider, setProvider] = useState("")
+  const [eth, setEth] = useState(null)
   const router = useRouter()
 
   const disconnect = () => {
     setCurrentAccount("");
-    //localStorage.clear();
+    setProvider("");
+    setIsLoading(false);
+  }
+
+  const getEthereumContract = () => {
+    const provider = new ethers.providers.Web3Provider(eth)
+    const signer = provider.getSigner()
+    const transactionContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer,
+    )
+  
+    return transactionContract
   }
 
   const checkIfWalletIsConnectedWeb3 = async () => {
@@ -203,12 +177,9 @@ export const TransactionProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    checkIfWalletIsConnectedWeb3()
-  }, [])
-
-  useEffect(() => {
-    checkIfWalletIsConnectedNetwork()
-  }, [])
+    checkIfWalletIsConnectedWeb3();
+    checkIfWalletIsConnectedNetwork();
+  }, [eth])
 
   useEffect(() => {
     if(!eth) return;
@@ -222,7 +193,7 @@ export const TransactionProvider = ({ children }) => {
       console.log("network", newNetwork);
       setCurrentNetwork(newNetwork);
     });
-  }, [])
+  }, [eth])
 
   useEffect(() => {
     if (isLoading) {
@@ -231,6 +202,14 @@ export const TransactionProvider = ({ children }) => {
       router.push('/')
     }
   }, [isLoading])
+
+  useEffect(() => {
+    const getEth = async() =>{
+    const providerDetect = await detectEthereumProvider();
+    setEth(providerDetect);
+    }
+    getEth();
+  }, [])
 
   return (
     <TransactionContext.Provider
@@ -249,7 +228,7 @@ export const TransactionProvider = ({ children }) => {
         setIsLoading,
         setProvider,
         colectFees,
-        activateInjectedProvider,
+        eth,
       }}
     >
       {children}
