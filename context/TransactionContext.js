@@ -67,6 +67,7 @@ export const TransactionProvider = ({ children }) => {
         return;
       }
       const accounts = await eth.request({ method: 'eth_requestAccounts' });
+      console.log("connectWalletWeb3", accounts);
       if(accounts && accounts?.length){
         setCurrentAccount(accounts[0]);
       } 
