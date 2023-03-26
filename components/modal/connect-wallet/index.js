@@ -1,8 +1,15 @@
-import React, {useContext} from 'react'
+import React, {useCallback} from 'react'
 import Image from 'next/image'
 import Modal from 'react-modal'
-import metamaskLogo from '../../../assets/mm.png';
-import { TransactionContext } from '../../../context/TransactionContext'
+
+import {
+  getConnections,
+} from "../../../connections";
+import useAppDispatch from "../../../hooks/useAppDispatch";
+import {
+  setProvider,
+  setWallet,
+} from "../../../redux/slices/authenticate";
 
 Modal.setAppElement('#__next')
 
@@ -35,38 +42,44 @@ const customStyles = {
   
   const ModalAccount = ({
     isOpen,
-    setOpen,
+    closeModal,
   }) => {
-    const {
-      setProvider,
-      connectWalletWeb3,
-    } =
-      useContext(TransactionContext)
+      const dispatchStore = useAppDispatch();
+      const connections = getConnections()?.filter(connection=>connection.shouldDisplay);
+
+      const tryActivation = useCallback(
+        async (connection) => {
+          try {
+            await connection.connector.activate()
+            dispatchStore(setProvider(connection.type));
+            dispatchStore(setWallet(connection.name));
+          } catch (error) {
+            console.error("tryActivation", error);
+          }
+        },
+        []
+      )
  
     return (
-      <Modal isOpen={isOpen} onRequestClose={() => setOpen()} style={customStyles}>
+      <Modal isOpen={isOpen} onRequestClose={() => closeModal()} style={customStyles}>
         <ContainerModal>
           <HeaderModal>
-           Connect wallet <VscChromeClose onClick={() => setOpen()} />
+           Connect wallet <VscChromeClose onClick={() => closeModal()} />
           </HeaderModal>
           <Stack spacing={2} pt={1} pb={3}>
-           <Item
-                           onClick={() => {
-                            connectWalletWeb3();
-                            setOpen();
-                            setProvider("MetaMask");
-                          }}
-           >
-<Image src={metamaskLogo} height={40} width={40} />             <Typography variant="subtitle1">MetaMask</Typography>
-           </Item>
-           {/* <Item
-           >
-           <Image src={walletConnectLogo} height={40} width={40} />  <Typography variant="subtitle1">Wallet Connect</Typography>
-</Item>
-<Item
->
-<Image src={coinbaseLogo} height={40} width={40} />  <Typography variant="subtitle1">Coinbase Wallet</Typography> 
-</Item> */}
+            {connections?.map((connection, index)=>{
+              return (
+                <Item
+                key={index}
+                onClick={() => {
+                 tryActivation(connection);
+                 closeModal();
+               }}
+               >
+                  <Image src={connection.icon} height={40} width={40} /> <Typography variant="subtitle1">{connection.name}</Typography>
+                </Item>
+              )
+            })}
           </Stack>
           <TypographyLegalDocs variant="body1">
           By connecting a wallet, you agree to 3ether.io 

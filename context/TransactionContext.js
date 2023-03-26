@@ -2,26 +2,42 @@ import React, { useEffect, useState } from 'react'
 import { contractABI, contractAddress } from '../lib/constants'
 import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
-import detectEthereumProvider from '@metamask/detect-provider';
-
+//import detectEthereumProvider from '@metamask/detect-provider';
+import { useWeb3React } from '@web3-react/core';
+import useAppDispatch from "../hooks/useAppDispatch";
+import useAppSelector from "../hooks/useAppSelector";
+import {
+  resetProvider,
+  setAccount,
+  getAccount,
+  resetAccount,
+  setNetwork,
+} from "../redux/slices/authenticate";
 export const TransactionContext = React.createContext();
 
 export const TransactionProvider = ({ children }) => {
-  const [currentAccount, setCurrentAccount] = useState("");
-  const [currentNetwork, setCurrentNetwork] = useState({});
+  const { account, connector, provider, chainId } = useWeb3React();
+
+  console.log("useWeb3React", account, chainId);
+
+  const currentAccount = useAppSelector(getAccount)
+  const dispatchStore = useAppDispatch();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [provider, setProvider] = useState("");
-  const [eth, setEth] = useState(null);
+
   const router = useRouter();
 
   const disconnect = () => {
-    setCurrentAccount("");
-    setProvider("");
+    dispatchStore(resetAccount());
     setIsLoading(false);
+    dispatchStore(resetProvider());
+    if (connector && connector.deactivate) {
+      connector.deactivate()
+    }
+    connector.resetState()
   }
 
   const getEthereumContract = () => {
-    const provider = new ethers.providers.Web3Provider(eth)
     const signer = provider.getSigner()
     const transactionContract = new ethers.Contract(
       contractAddress,
@@ -34,62 +50,56 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-      if (!eth) return;
+      if (!provider) return;
       let accounts = [];
-      console.log("checkIfWalletIsConnectedWeb3", accounts);
-       accounts = await eth.request({ method: 'eth_accounts' });
-       console.log("checkIfWalletIsConnectedWeb30", accounts);
+       accounts = await provider.provider.request({ method: 'eth_accounts' });
       if (accounts && accounts?.length) {
-        setCurrentAccount(accounts[0])
-      } else {
-        setCurrentAccount("");
+        dispatchStore(setAccount(accounts[0]));
       }
     } catch (error) {
-      console.error("err",error);
+      console.error("checkIfWalletIsConnectedWeb3",error);
     }
   }
 
   const checkIfWalletIsConnectedNetwork = async () => {
     try {
-      if (!eth) return;
-      const provider = new ethers.providers.Web3Provider(eth, "any")
+      if (!provider) return;
       const network = await provider.getNetwork();
-      setCurrentNetwork(network);
+      dispatchStore(setNetwork(network));
     } catch (error) {
-      console.error("err",error);
+      console.error("checkIfWalletIsConnectedNetwork",error);
     }
   }
 
-  const connectWalletWeb3 = async () => {
-    try {
-      if (!eth) {
-        alert("Please add metamask extension");
-        return;
-      }
-      const accounts = await eth.request({ method: 'eth_requestAccounts' });
-      console.log("connectWalletWeb3");
-      if(accounts && accounts?.length){
-        setCurrentAccount(accounts[0]);
-      } 
-    } catch (error) {
-      console.error("err",error);
-    }
-  }
+  // const connectWalletWeb3 = async () => {
+  //   try {
+  //     if (!eth) {
+  //       alert("Please add metamask extension");
+  //       return;
+  //     }
+  //     const accounts = await eth.request({ method: 'eth_requestAccounts' });
+  //     console.log("connectWalletWeb3");
+  //     if(accounts && accounts?.length){
+  //       setCurrentAccount(accounts[0]);
+  //     } 
+  //   } catch (error) {
+  //     console.error("connectWalletWeb3",error);
+  //   }
+  // }
 
   const changeNetwork = async (newNetwork) => {
     try {
-      console.log("request", eth, currentAccount, newNetwork);
-      if (!eth || !currentAccount) {
-      setCurrentNetwork(newNetwork);
+      if (!provider || !currentAccount) {
+      dispatchStore(setNetwork(newNetwork));
         return;
       }
-      await eth.request({
+      await provider.provider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: newNetwork.changeNetworkParam.chainId }],
       });
     } catch (error) {
-      console.log("error", error, newNetwork, eth);
-      await eth.request({
+      console.error("changeNetwork", error, newNetwork);
+      await provider.provider.request({
         method: 'wallet_addEthereumChain',
         params: [newNetwork.changeNetworkParam]
       });
@@ -98,7 +108,6 @@ export const TransactionProvider = ({ children }) => {
 
   const sign = async (msg) => {
     try {
-      const provider = new ethers.providers.Web3Provider(eth);
       const message = msg;
       const signer = provider.getSigner();
       const signature = await signer.signMessage(message);
@@ -109,7 +118,7 @@ export const TransactionProvider = ({ children }) => {
         address,
       };
     } catch (error) {
-      console.error("err",error);
+      console.error("sign",error);
     }
   }
 
@@ -122,19 +131,19 @@ export const TransactionProvider = ({ children }) => {
       return true;
 
     } catch (error) {
-      console.error("err",error);
+      console.error("verify",error);
     }
   }
 
   const colectFees = async (transaction) => {
     try {
-      if (!eth) return;
+      if (!provider) return;
       const {
         walletAddress,
         value,
         chainId,
       } = transaction;
-      const response = await eth.request({
+      const response = await provider.provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -147,7 +156,7 @@ export const TransactionProvider = ({ children }) => {
       })
       return response;
     } catch (error) {
-      console.error("err",error);
+      console.error("colectFees",error);
     }
   }
 
@@ -155,10 +164,10 @@ export const TransactionProvider = ({ children }) => {
     transaction,
   ) => {
     try {
-      if (!eth) return;
+      if (!provider) return;
       const { data, gasPrice, gas, to, from, value, chainId } = transaction;
 
-      const response = await eth.request({
+      const response = await provider.provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -174,28 +183,27 @@ export const TransactionProvider = ({ children }) => {
       })
       return response;
     } catch (error) {
-      console.error("err",error);
+      console.error("sendTransaction",error);
     }
   }
 
   useEffect(() => {
-    checkIfWalletIsConnectedWeb3();
-    checkIfWalletIsConnectedNetwork();
-  }, [eth])
+   checkIfWalletIsConnectedWeb3();
+   checkIfWalletIsConnectedNetwork();
+  }, [provider])
 
   useEffect(() => {
-    if(!eth) return;
-    const provider = new ethers.providers.Web3Provider(eth, "any")
-    eth.on('accountsChanged', function (accounts) {
-      console.log("accountsChanged");
-      setCurrentAccount(accounts[0]);
-    });
+    if(!provider) return;
     // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {
-      console.log("network", newNetwork);
-      setCurrentNetwork(newNetwork);
+     dispatchStore(setNetwork(newNetwork));
     });
-  }, [eth])
+  }, [provider])
+
+  useEffect(() => {
+    if(!account) return;
+    dispatchStore(setAccount(account));
+  }, [account])
 
   useEffect(() => {
     if (isLoading) {
@@ -205,35 +213,18 @@ export const TransactionProvider = ({ children }) => {
     }
   }, [isLoading])
 
-  useEffect(() => {
-    const getEth = async() =>{
-    const providerDetect = await detectEthereumProvider();
-    if (providerDetect !== window.ethereum) {
-      console.error('Do you have multiple wallets installed?');
-    }
-    setEth(providerDetect);
-    }
-    getEth();
-  }, [])
-
   return (
     <TransactionContext.Provider
       value={{
-        connectWalletWeb3,
-        currentAccount,
         sendTransaction,
         isLoading,
-        provider,
         disconnect,
         getEthereumContract,
-        currentNetwork,
         changeNetwork,
         sign,
         verify,
         setIsLoading,
-        setProvider,
         colectFees,
-        eth,
       }}
     >
       {children}

@@ -15,6 +15,21 @@ import Link from 'next/link'
 import ModalAccount from "../modal/account-details"
 import ModalWallet from "../modal/connect-wallet"
 import { NETWORKS_AVAILABLE } from '../../utils/constants';
+import useAppDispatch from "../../hooks/useAppDispatch";
+import useAppSelector from "../../hooks/useAppSelector";
+import {
+  openWalletModal,
+  closeWalletModal,
+  openAccountModal,
+  closeAccountModal,
+  getWalletModal,
+  getAccountModal
+} from "../../redux/slices/ui";
+import {
+  getAccount,
+  getNetwork,
+} from "../../redux/slices/authenticate";
+import { Desktop, Mobile } from '../layout/responsive';
 
 import {
   Menu,
@@ -40,17 +55,18 @@ const style = {
 }
 
 const Header = () => {
+  const dispatchStore = useAppDispatch();
+  const openWallet = useAppSelector(getWalletModal);
+  const openAccount = useAppSelector(getAccountModal);
+  const currentAccount = useAppSelector(getAccount);
+  const currentNetwork = useAppSelector(getNetwork)
+
   const [selectedNav, setSelectedNav] = useState('swap');
   const [userName, setUserName] = useState();
   const {
-    currentAccount,
     disconnect,
-    currentNetwork,
     changeNetwork,
   } = useContext(TransactionContext)
-  const [openAccount, setOpenAccount] = useState(false)
-  const [openWallet, setOpenWallet] = useState(false)
-
   const [anchorEl, setAnchorEl] = useState(null);
   const openNetwork = Boolean(anchorEl);
 
@@ -77,18 +93,34 @@ const Header = () => {
 
   const disconnectWeb3 = () => {
     disconnect();
-    setOpenAccount(false);
+    dispatchStore(closeAccountModal())
   }
 
   return (
     <Fragment>
-      <ModalAccount isOpen={openAccount} userName={currentAccount} currentAccount={currentAccount} currentNetwork={currentNetwork} setOpen={() => setOpenAccount(false)} disconnect={() => disconnectWeb3()} />
-      <ModalWallet isOpen={openWallet} userName={currentAccount} currentAccount={currentAccount} currentNetwork={currentNetwork} setOpen={() => setOpenWallet(false)} disconnect={() => disconnectWeb3()} />
+      <ModalAccount 
+      isOpen={openAccount} 
+      userName={currentAccount} 
+      currentAccount={currentAccount} 
+      currentNetwork={currentNetwork} 
+      closeModal={() => dispatchStore(closeAccountModal())} 
+      disconnect={() => disconnectWeb3()} 
+      />
+      <ModalWallet 
+      isOpen={openWallet} 
+      userName={currentAccount} 
+      currentAccount={currentAccount} 
+      currentNetwork={currentNetwork} 
+      closeModal={() => dispatchStore(closeWalletModal())} 
+      disconnect={() => disconnectWeb3()} 
+      />
       <div className={style.wrapper}>
         <div className={style.headerLogo}>
-          <Image src={uniswapLogo} alt='uniswap' height={40} width={40} />
+          <Image src={uniswapLogo} alt='3ether.io' height={40} width={40} />
         </div>
-        <div className={style.nav}>
+        {
+          <Desktop>
+                    <div className={style.nav}>
           <div className={style.navItemsContainer}>
             <div
               onClick={() => setSelectedNav('swap')}
@@ -101,26 +133,6 @@ const Header = () => {
                 Swap
               </Link>
             </div>
-            <div
-              //onClick={() => setSelectedNav('pool')}
-              className={`${style.navItem} ${selectedNav === 'pool' && style.activeNavItem} cursor-not-allowed`}
-            >
-              Pool
-            </div>
-            <div
-              //onClick={() => setSelectedNav('vote')}
-              className={`${style.navItem} ${selectedNav === 'vote' && style.activeNavItem} cursor-not-allowed`}
-            >
-              Vote
-            </div>
-            <div
-              onClick={() => {
-                //setSelectedNav('tokens')
-              }}
-              className={`${style.navItem} ${selectedNav === 'tokens' && style.activeNavItem} cursor-not-allowed`}
-            >
-             Tokens
-            </div>
             <a
               href={getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
               target='_blank'
@@ -132,6 +144,8 @@ const Header = () => {
             </a>
           </div>
         </div>
+        </Desktop>
+        }
         <div className={style.buttonsContainer}>
           <div className={`${style.button} ${style.buttonPadding}`} onClick={handleClickNetwork}>
             <div className={style.buttonIconContainer}>
@@ -163,7 +177,7 @@ const Header = () => {
               <div
                 className={style.buttonTextContainer}
                 onClick={() => {
-                  setOpenAccount(true);
+                  dispatchStore(openAccountModal())
                 }}
               >{userName}
               </div>
@@ -171,13 +185,12 @@ const Header = () => {
           ) : (
             <div
               onClick={() => {
-                //connectWalletWeb3();
-                setOpenWallet(true);
+                dispatchStore(openWalletModal());
               }}
               className={`${style.button} ${style.buttonPadding}`}
             >
               <div className={`${style.buttonAccent} ${style.buttonPadding}`}>
-                Connect Wallet
+                Connect
               </div>
             </div>
           )}
@@ -187,7 +200,36 @@ const Header = () => {
             </div>
           </div> */}
         </div>
+
       </div>
+      {
+          <Mobile>
+        <div className={style.nav}>
+          <div className={style.navItemsContainer}>
+            <div
+              onClick={() => setSelectedNav('swap')}
+              className={`${style.navItem} ${selectedNav === 'swap' && style.activeNavItem
+                }`}
+            >
+              <Link
+                href="/"
+              >
+                Swap
+              </Link>
+            </div>
+            <a
+              href={getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
+              target='_blank'
+              rel='noreferrer'
+            >
+              <div className={style.navItem}>
+                Explorer <FiArrowUpRight />
+              </div>
+            </a>
+          </div>
+        </div>
+        </Mobile>
+        }
     </Fragment>
   )
 }

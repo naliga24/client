@@ -1,5 +1,5 @@
 import React,{
-    useState, useContext,
+    useState,
   } from 'react'
  import { 
     FiCopy 
@@ -10,7 +10,11 @@ import {
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { NETWORKS_AVAILABLE } from '../../../utils/constants';
 import Modal from 'react-modal'
-import { TransactionContext } from '../../../context/TransactionContext'
+
+import useAppSelector from "../../../hooks/useAppSelector";
+import {
+  getWallet,
+} from "../../../redux/slices/authenticate";
 
 Modal.setAppElement('#__next')
 
@@ -47,16 +51,13 @@ const customStyles = {
   
   const ModalAccount = ({
     isOpen,
-    setOpen,
+    closeModal,
     userName,
     currentAccount,
     currentNetwork,
     disconnect,
   }) => {
-    const {
-      provider,
-    } =
-      useContext(TransactionContext)
+    const wallet = useAppSelector(getWallet);
 
     const [copied, setCopied] = useState(false)
   
@@ -72,15 +73,15 @@ const customStyles = {
     };
   
     return (
-      <Modal isOpen={isOpen} onRequestClose={() => setOpen()} style={customStyles}>
+      <Modal isOpen={isOpen} onRequestClose={() => closeModal()} style={customStyles}>
         <ContainerModal>
           <HeaderModal>
-            Account <VscChromeClose onClick={() => setOpen()} />
+            Account <VscChromeClose onClick={() => closeModal()} />
           </HeaderModal>
           <DetailsGroupModal>
             <DisconnectGroup>
               <ConnectWith>
-                Connected with {provider}
+                Connected with {wallet}
               </ConnectWith>
               <DisconnectButton
                 onClick={() => {

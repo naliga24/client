@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/header/Header.js", "components/TransactionLoader.js", "components/Main.js", "pages/index.js", "pages/_app.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/header/Header.js", "components/TransactionLoader.js", "components/Main.js", "pages/index.js", "pages/_app.js", "utils/userAgent.js", "connections/utils.js", "utils/chains.js", "utils/networks.js", "connections/WalletConnect.js", "utils/providers.js"],
   "exclude": ["node_modules"]
 }

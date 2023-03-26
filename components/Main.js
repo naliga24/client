@@ -16,6 +16,15 @@ import {
 } from '../api/token';
 import { NETWORKS_AVAILABLE } from '../utils/constants'
 import SearchIcon from '@mui/icons-material/Search';
+import useAppDispatch from "../hooks/useAppDispatch";
+import useAppSelector from "../hooks/useAppSelector";
+import {
+  getAccount,
+  getNetwork,
+} from "../redux/slices/authenticate";
+import {
+  openWalletModal,
+} from "../redux/slices/ui";
 
 import {
   IoIosArrowBackIcon,
@@ -79,14 +88,15 @@ const Main = () => {
   const [sendToAddress, setSendToAddress] = useState('');
   const [isSendToAddressCorrect, setIsSendToAddressCorrect] = useState(true);
 
+  const currentAccount = useAppSelector(getAccount);
+  const currentNetwork = useAppSelector(getNetwork)
+  const dispatchStore = useAppDispatch();
+
   const {
-    currentAccount,
     sendTransaction,
-    currentNetwork,
     setIsLoading,
     isLoading,
     colectFees,
-    connectWalletWeb3,
   } =
     useContext(TransactionContext)
   const router = useRouter()
@@ -99,7 +109,7 @@ const Main = () => {
   const callSwapToken = async () => {
     try {
       if(!currentAccount){
-        connectWalletWeb3();
+        dispatchStore(openWalletModal());
         return;
       }
       setLoadingAll(true);

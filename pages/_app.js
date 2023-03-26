@@ -37,12 +37,17 @@ const localeMap = {
   en: enLocale,
 };
 
+if (typeof window !== 'undefined') {
+  window.ethereum.autoRefreshOnNetworkChange = false
+}
+
 function MyApp({ Component, pageProps }) {
 
   return (
     <StrictMode>
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+        <ConnectorsProvider>
       <TransactionProvider>
         <StylesProvider jss={jss}>
           <LocalizationProvider
@@ -52,17 +57,16 @@ function MyApp({ Component, pageProps }) {
             <StyledEngineProvider injectFirst>
               <MuiThemeProvider theme={createTheme()}>
                 <ThemeProvider theme={createTheme()}>
-                  <ConnectorsProvider>
                   <Layout>
                     <Component {...pageProps} />
                   </Layout>
-                  </ConnectorsProvider>
                 </ThemeProvider>
               </MuiThemeProvider>
             </StyledEngineProvider>
           </LocalizationProvider>
         </StylesProvider>
       </TransactionProvider>
+      </ConnectorsProvider>
       </PersistGate>
       </Provider>
       </StrictMode>
