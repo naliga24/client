@@ -1,12 +1,12 @@
 import { SupportedChainId } from './chains'
 
-const INFURA_KEY = process.env.REACT_APP_INFURA_KEY
+const INFURA_KEY = process.env.NEXT_PUBLIC_INFURA_KEY
 if (typeof INFURA_KEY === 'undefined') {
-  throw new Error(`REACT_APP_INFURA_KEY must be a defined environment variable`)
+  throw new Error(`NEXT_PUBLIC_INFURA_KEY must be a defined environment variable`)
 }
-const QUICKNODE_RPC_URL = process.env.REACT_APP_BNB_RPC_URL
+const QUICKNODE_RPC_URL = process.env.NEXT_PUBLIC_BNB_RPC_URL
 if (typeof QUICKNODE_RPC_URL === 'undefined') {
-  throw new Error(`REACT_APP_BNB_RPC_URL must be a defined environment variable`)
+  throw new Error(`NEXT_PUBLIC_BNB_RPC_URL must be a defined environment variable`)
 }
 
 /**

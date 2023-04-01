@@ -41,7 +41,7 @@ if (typeof window !== 'undefined' && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
-console.log("process.env.REACT_APP_BNB_RPC_URL", process.env.REACT_APP_BNB_RPC_URL);
+console.log("process.env.NEXT_PUBLIC_BNB_RPC_URL", process.env.NEXT_PUBLIC_BNB_RPC_URL);
 
 function MyApp({ Component, pageProps }) {
 
