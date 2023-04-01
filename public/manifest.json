@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": "/",
     "start_url": ".",
-    "name": "Send Swap Blockchain App",
-    "short_name": "Send Swap",
+    "name": "3ether.io",
+    "short_name": "3ether.io",
     "description": "A Defi Appication for Swaping Ethereum Tokens",
     "icons": [
         {

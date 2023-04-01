@@ -361,7 +361,6 @@ const Main = () => {
                 type='text'
                 className={style.transferPropInput}
                 placeholder='Send to address 0x... (Optional)'
-                
                 onChange={e => {
                  const value = e.target.value;
                  const isCorrectAddress = ethers.utils.isAddress(value);
@@ -399,8 +398,9 @@ const Main = () => {
                 <SearchIcon />
               </IconButton>
               <InputBase
+                autoFocus
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Search by name or paste address"
+                placeholder="Search by name or address"
                 inputProps={{ 'aria-label': 'search token name or address' }}
                 onChange={(e) => {
                   setTokenFilter(e.target.value);

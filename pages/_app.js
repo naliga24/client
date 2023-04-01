@@ -37,7 +37,7 @@ const localeMap = {
   en: enLocale,
 };
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
