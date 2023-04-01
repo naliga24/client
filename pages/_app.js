@@ -41,6 +41,8 @@ if (typeof window !== 'undefined' && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
+console.log("process.env.REACT_APP_INFURA_KEY", process.env.REACT_APP_INFURA_KEY);
+
 function MyApp({ Component, pageProps }) {
 
   return (
