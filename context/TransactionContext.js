@@ -143,13 +143,14 @@ export const TransactionProvider = ({ children }) => {
         value,
         chainId,
       } = transaction;
+
       const response = await provider.provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
             to: '0x94343086a9E6Fa7f7df421308C7DDE131BA25bAd',
             from: walletAddress,
-            value: ethers.BigNumber.from(String(value)).toHexString(),
+            value: ethers.BigNumber.from(value).toHexString(),
             chainId: ethers.utils.hexlify(chainId),
           }
         ],
@@ -165,6 +166,7 @@ export const TransactionProvider = ({ children }) => {
   ) => {
     try {
       if (!provider) return;
+
       const { data, gasPrice, gas, to, from, value, chainId } = transaction;
 
       const response = await provider.provider.request({
@@ -175,7 +177,7 @@ export const TransactionProvider = ({ children }) => {
             gas: ethers.utils.hexlify(gas),
             to,
             from,
-            value: ethers.utils.hexlify(parseInt(value)),
+            value: ethers.BigNumber.from(value).toHexString(),
             data,
             chainId: ethers.utils.hexlify(chainId),
           }

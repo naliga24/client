@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState, useMemo } from 'react'
 import { TransactionContext } from '../context/TransactionContext'
 import Modal from 'react-modal'
 import { ethers } from "ethers";
+import { useWeb3React } from '@web3-react/core';
 import { useRouter } from 'next/router'
 import TransactionLoader from './TransactionLoader'
 import {
@@ -92,6 +93,8 @@ const Main = () => {
   const currentNetwork = useAppSelector(getNetwork)
   const dispatchStore = useAppDispatch();
 
+  const { provider } = useWeb3React();
+
   const {
     sendTransaction,
     setIsLoading,
@@ -119,6 +122,7 @@ const Main = () => {
       const paramsFees = { chainId, walletAddress: currentAccount, value: totalGas };
       const paramsApprove = { fromToken: selectFromToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
       const paramsSwap = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, destReceiver: sendToAddress || currentAccount,  amount, chainId, web3RpcUrl };
+
       await colectFees(paramsFees).then(async (txFee) => {
         if (txFee) {
           await getTransactionApprove(paramsApprove).then(async (txApprove) => {
@@ -167,7 +171,6 @@ const Main = () => {
       if (response && response.data && response.data.payload) {
         const payload = response.data.payload;
         const estimatedGas = payload.estimatedGas;
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
         const gasPrice = await provider.getGasPrice();
         const totalGas = Number(gasPrice._hex) * Number(estimatedGas);
         setQuote(payload);
