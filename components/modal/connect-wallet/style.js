@@ -4,18 +4,22 @@ import {Stack as MuiStack, Typography as MuiTypography} from '@mui/material'
 import Link from 'next/link'
 
 export const ContainerModal = styled.div`
-  margin: 0px 0px 2rem;
+  ${({ theme }) => `
+  margin: 0px 0px 5rem;
   background-color: rgb(25, 27, 31);
   border: 1px solid rgb(33, 36, 41);
   box-shadow: rgb(0 0 0 / 5%) 0px 4px 8px 0px;
-  padding: 0px;
-  width: 418px;
+  width: 26.125rem;
   overflow: hidden auto;
   align-self: center;
   display: flex;
   border-radius: 20px;
   padding: 1rem;
   flex-direction: column;
+  @media ${theme.breakpoints.mobile} {
+    padding: 3rem;
+ }
+`}
 `;
 
 export const HeaderModal = styled.div`

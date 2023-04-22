@@ -49,15 +49,15 @@ Modal.setAppElement('#__next')
 const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 z-10`,
   content: `bg-[#191B1F] w-[40rem] rounded-2xl p-4 z-0`,
-  formHeader: `px-2 flex items-center justify-between font-semibold text-xl`,
-  transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 text-3xl  border border-[#20242A] hover:border-[#41444F]  flex justify-between`,
-  transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full text-2xl`,
+  formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
+  transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between`,
+  transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl`,
   currencySelector: `flex`,
-  currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl text-xl font-medium cursor-pointer p-2 mt-[-0.2rem]`,
+  currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl sm:text-base md:text-lg font-medium cursor-pointer p-2 mt-[-0.2rem]`,
   currencySelectorIcon: `w-max flex items-center`,
   currencySelectorTicker: `mx-2`,
   currencySelectorArrow: `text-lg`,
-  confirmButton: `bg-[#2172E5] my-2 rounded-2xl py-6 px-8 text-xl font-semibold flex items-center justify-center !disabled:cursor-pointer !disabled:border-[#2172E5] !disabled:hover:border-[#234169] w-full disabled:bg-[#20242A] disabled:text-gray-400`,
+  confirmButton: `bg-[#2172E5] my-2 rounded-2xl py-6 px-8 sm:text-base md:text-lg font-semibold flex items-center justify-center !disabled:cursor-pointer !disabled:border-[#2172E5] !disabled:hover:border-[#234169] w-full disabled:bg-[#20242A] disabled:text-gray-400`,
 }
 
 const customStyles = {

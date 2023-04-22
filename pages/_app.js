@@ -18,6 +18,7 @@ import { store } from "../redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import ConnectorsProvider from "../context/ConnectorsContext";
+import useTheme from "../hooks/useTheme";
 
 const isBrowser = typeof document !== "undefined";
 let insertionPoint;
@@ -42,6 +43,7 @@ if (typeof window !== 'undefined' && window.ethereum) {
 }
 
 function MyApp({ Component, pageProps }) {
+  const { theme } = useTheme();
 
   return (
     <StrictMode>
@@ -55,8 +57,8 @@ function MyApp({ Component, pageProps }) {
             adapterLocale={localeMap.en}
           >
             <StyledEngineProvider injectFirst>
-              <MuiThemeProvider theme={createTheme()}>
-                <ThemeProvider theme={createTheme()}>
+              <MuiThemeProvider theme={createTheme(theme)}>
+                <ThemeProvider theme={createTheme(theme)}>
                   <Layout>
                     <Component {...pageProps} />
                   </Layout>
