@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState, useMemo } from 'react'
 import { TransactionContext } from '../context/TransactionContext'
 import Modal from 'react-modal'
 import { ethers } from "ethers";
+// import { v4 as uuidv4 } from 'uuid';
 import { useWeb3React } from '@web3-react/core';
 import { useRouter } from 'next/router'
 import TransactionLoader from './TransactionLoader'
@@ -88,6 +89,8 @@ const Main = () => {
   const [tokenReceive, setTokenReceive] = useState('');
   const [sendToAddress, setSendToAddress] = useState('');
   const [isSendToAddressCorrect, setIsSendToAddressCorrect] = useState(true);
+  const [isDisableConfirm, setIsDisableConfirm] = useState(true);
+  //const [uuid, setUuid] = useState(uuidv4());
 
   const currentAccount = useAppSelector(getAccount);
   const currentNetwork = useAppSelector(getNetwork)
@@ -196,18 +199,17 @@ const Main = () => {
     return sortTokens
   }
 
-  const disableConfirm = () => {
-    return !selectFromToken || !selectToToken || !parseFloat(unit) > 0 || isLoading || !isSendToAddressCorrect;
-  }
-
   const isShowFee = () => {
-    return selectFromToken && selectToToken && unit;
+    const isUnit = parseFloat(unit) > 0;
+    return selectFromToken && selectToToken && isUnit && tokenReceive;
   }
 
   const setTokenWillReceive = () => {
     if (quote && quote.toTokenAmount && quote.toToken && quote.toToken.decimals) {
       const receive = String(ethers.utils.formatUnits(quote.toTokenAmount, quote.toToken.decimals));
       setTokenReceive(receive);
+    } else {
+      setTokenReceive('');
     }
   }
 
@@ -280,16 +282,37 @@ const Main = () => {
 
 
   useEffect(() => {
-    if (!disableConfirm()) {
-      callQuotePrice();
-    }
+     let interval;
+      if (!isDisableConfirm) {
+         interval =  setInterval(() => {
+          callQuotePrice();
+        }, 3000);
+      } else {
+        clearInterval(interval)
+      }
+      return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectFromToken?.address, selectToToken?.address, unit])
+  }, [selectFromToken?.address, selectToToken?.address, unit, isDisableConfirm])
 
   useEffect(() => {
     setTokenWillReceive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quote?.fromToken?.address, quote?.toToken?.address, quote?.fromTokenAmount, quote?.estimatedGas])
+  }, [unit, quote?.fromToken?.address, quote?.toToken?.address, quote?.fromTokenAmount, quote?.estimatedGas])
+
+  useEffect(() => {
+    const disabled = !selectFromToken?.address || !selectToToken?.address || !(parseFloat(unit) > 0) || isLoading || !isSendToAddressCorrect;
+    setIsDisableConfirm(disabled);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectFromToken?.address, selectToToken?.address, unit, isLoading, isSendToAddressCorrect])
+
+  useEffect(() => {
+    const isUnit = parseFloat(unit) > 0;
+    if(!isUnit) {
+      setTokenReceive('');
+      setQuote({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unit])
 
   const head = {
     title: "3ether.io | DEX",
@@ -300,7 +323,9 @@ const Main = () => {
     <Head> 
     <title>{head.title}</title>
   </Head>
-    <div className={style.wrapper} onClick={() => {
+    <div 
+    className={style.wrapper} 
+    onClick={() => {
       setSelectType('');
       setTokenFilter('');
     }}>
@@ -374,7 +399,7 @@ const Main = () => {
               />
 
             </div>
-            <button onClick={e => handleSubmit(e)} className={style.confirmButton} disabled={disableConfirm()}>
+            <button onClick={e => handleSubmit(e)} className={style.confirmButton} disabled={isDisableConfirm}>
               Confirm
             </button>
             {

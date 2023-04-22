@@ -63,7 +63,8 @@
     "redux-thunk": "^2.4.2",
     "sharp": "^0.30.7",
     "styled-components": "^5.3.5",
-    "ua-parser-js": "^1.0.34"
+    "ua-parser-js": "^1.0.34",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "17.0.13",
