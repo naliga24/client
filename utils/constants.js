@@ -191,8 +191,17 @@ const NETWORKS_AVAILABLE = [
 
 const SUPPORTED_CHAIN_IDS = NETWORKS_AVAILABLE.map(network=>network.chainId)
 
+const PLATFORM_OWNER = "0x94343086a9E6Fa7f7df421308C7DDE131BA25bAd";
+
+const PLATFORM_FEE = "3"; // 3% fee (max is 3% and min is 0% on 1inch.io)
+
+export const getNetworkData = (chainId) => {
+    return NETWORKS_AVAILABLE.find(network => network.chainId === chainId);
+  }
 
 export {
     NETWORKS_AVAILABLE,
     SUPPORTED_CHAIN_IDS,
+    PLATFORM_OWNER,
+    PLATFORM_FEE,
 };

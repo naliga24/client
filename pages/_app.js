@@ -2,6 +2,7 @@ import React from 'react'
 import { StrictMode } from "react";
 import '../styles/globals.css'
 import { TransactionProvider } from '../context/TransactionContext'
+import { AlchemyProvider } from '../context/AlchemyContext'
 import { ThemeProvider } from "styled-components";
 import { create } from "jss";
 import { StyledEngineProvider } from "@mui/styled-engine-sc";
@@ -10,7 +11,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import StylesProvider from "@mui/styles/StylesProvider";
 import enLocale from "date-fns/locale/en-GB";
-import Layout from "../components/layout";
 import jssPreset from "@mui/styles/jssPreset";
 import createTheme from "../theme";
 import { Provider } from "react-redux";
@@ -19,6 +19,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import ConnectorsProvider from "../context/ConnectorsContext";
 import useTheme from "../hooks/useTheme";
+import Layout from "../components/layout";
 
 const isBrowser = typeof document !== "undefined";
 let insertionPoint;
@@ -51,6 +52,7 @@ function MyApp({ Component, pageProps }) {
         <PersistGate loading={null} persistor={persistor}>
         <ConnectorsProvider>
       <TransactionProvider>
+        <AlchemyProvider>
         <StylesProvider jss={jss}>
           <LocalizationProvider
             dateAdapter={AdapterDateFns}
@@ -67,6 +69,7 @@ function MyApp({ Component, pageProps }) {
             </StyledEngineProvider>
           </LocalizationProvider>
         </StylesProvider>
+        </AlchemyProvider>
       </TransactionProvider>
       </ConnectorsProvider>
       </PersistGate>

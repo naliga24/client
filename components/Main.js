@@ -15,14 +15,16 @@ import {
   quotePrice,
   getTransactionApprove,
   getTransactionSwap,
+  healthCheck,
 } from '../api/token';
-import { NETWORKS_AVAILABLE } from '../utils/constants'
+import { PLATFORM_OWNER, PLATFORM_FEE, getNetworkData} from '../utils/constants'
 import SearchIcon from '@mui/icons-material/Search';
 import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 import {
   getAccount,
   getNetwork,
+  setSwapAvailableTokens,
 } from "../redux/slices/authenticate";
 import {
   openWalletModal,
@@ -42,6 +44,7 @@ import {
   TableCell,
   Typography,
   Input,
+  AlertStyled,
 } from "./main.style"
 
 
@@ -49,7 +52,7 @@ Modal.setAppElement('#__next')
 
 const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 z-10`,
-  content: `bg-[#191B1F] w-[40rem] rounded-2xl p-4 z-0`,
+  content: `bg-[#191B1F] w-[30rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
   transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between`,
   transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl`,
@@ -90,6 +93,7 @@ const Main = () => {
   const [sendToAddress, setSendToAddress] = useState('');
   const [isSendToAddressCorrect, setIsSendToAddressCorrect] = useState(true);
   const [isDisableConfirm, setIsDisableConfirm] = useState(true);
+  const [apiHealthCheck, setApiHealthCheck] = useState(true);
   //const [uuid, setUuid] = useState(uuidv4());
 
   const currentAccount = useAppSelector(getAccount);
@@ -102,7 +106,6 @@ const Main = () => {
     sendTransaction,
     setIsLoading,
     isLoading,
-    colectFees,
   } =
     useContext(TransactionContext)
   const router = useRouter()
@@ -122,12 +125,9 @@ const Main = () => {
       const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex))
       const chainId = currentNetwork.chainId;
       const web3RpcUrl = getNetworkData(chainId);
-      const paramsFees = { chainId, walletAddress: currentAccount, value: totalGas };
       const paramsApprove = { fromToken: selectFromToken, walletAddress: currentAccount, amount, chainId, web3RpcUrl };
-      const paramsSwap = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, destReceiver: sendToAddress || currentAccount,  amount, chainId, web3RpcUrl };
+      const paramsSwap = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, destReceiver: sendToAddress || currentAccount,  amount, chainId, web3RpcUrl, referrerAddress: PLATFORM_OWNER, fee: PLATFORM_FEE };
 
-      await colectFees(paramsFees).then(async (txFee) => {
-        if (txFee) {
           await getTransactionApprove(paramsApprove).then(async (txApprove) => {
             const { data: { payload: payloadApprove = {} } = {} } = txApprove;
             payloadApprove.chainId = chainId;
@@ -143,12 +143,8 @@ const Main = () => {
               });
             })
           });
-        } else {
-          setLoadingAll(false);
-        }
-      });
     } catch (error) {
-      console.log(error)
+      console.log("callSwapToken:",error)
       setLoadingAll(false);
     }
   }
@@ -160,6 +156,7 @@ const Main = () => {
       if (response && response.data && response.data.payload && response.data.payload.tokens && Object.values(response.data.payload.tokens).length) {
         const tokens = Object.values(response.data.payload.tokens);
         setAvailableSwapTokens(tokens);
+        dispatchStore(setSwapAvailableTokens(tokens));
       }
     } catch (error) {
       console.log(error)
@@ -169,7 +166,7 @@ const Main = () => {
   const callQuotePrice = async () => {
     try {
       const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex));
-      const params = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId: currentNetwork.chainId };
+      const params = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId: currentNetwork.chainId, fee: PLATFORM_FEE };
       const response = await quotePrice(params);
       if (response && response.data && response.data.payload) {
         const payload = response.data.payload;
@@ -184,19 +181,30 @@ const Main = () => {
     }
   }
 
+  const callHealthCheck = async () => {
+    try {
+      const params = { chainId: currentNetwork.chainId};
+      const response = await healthCheck(params);
+      const isGoodHealth = response && response?.data && response?.data?.code && response?.data?.code === 200;
+      setApiHealthCheck(isGoodHealth);
+      console.log("callHealthCheck=>", isGoodHealth);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleSubmit = async () => {
     callSwapToken();
   }
 
   const sortTokens = () => {
-    let tokens = availableSwapTokens.length ? availableSwapTokens : []
+    let tokens = availableSwapTokens.length ? availableSwapTokens : [];
     const keyword = tokenFilter.toLowerCase();
-    if (tokenFilter && tokens.length) {
+    if (tokenFilter && tokens?.length) {
       let reg = new RegExp(keyword);
       tokens = tokens.filter(token => reg.test(token.symbol.toLowerCase()) || reg.test(token.name.toLowerCase()) || reg.test(token.address.toLowerCase()));
     }
-    const sortTokens = tokens.sort((a, b) => a.address - b.address);
-    return sortTokens
+    return tokens;
   }
 
   const isShowFee = () => {
@@ -206,7 +214,7 @@ const Main = () => {
 
   const setTokenWillReceive = () => {
     if (quote && quote.toTokenAmount && quote.toToken && quote.toToken.decimals) {
-      const receive = String(ethers.utils.formatUnits(quote.toTokenAmount, quote.toToken.decimals));
+      const receive = ethers.utils.formatUnits(quote.toTokenAmount, quote.toToken.decimals);
       setTokenReceive(receive);
     } else {
       setTokenReceive('');
@@ -215,14 +223,9 @@ const Main = () => {
 
   const EstimateGas = () => {
     const chainId = currentNetwork.chainId;
-    const gasBuffer = 3;
-    return <div>Estimated Fee: {String(ethers.utils.formatUnits(String(totalGas * gasBuffer), getNetworkData(chainId).decimals))} {getNetworkData(chainId).currency}</div>;
+    const gasBuffer = 1;
+    return <div>Estimated Fee: {ethers.utils.formatUnits(String(totalGas * gasBuffer), getNetworkData(chainId).decimals)} {getNetworkData(chainId).currency}</div>;
   }
-
-  const getNetworkData = (chainId) => {
-    return NETWORKS_AVAILABLE.find(network => network.chainId === chainId);
-  }
-
 
   const clearData = () => {
     setSelectType('');
@@ -284,9 +287,10 @@ const Main = () => {
   useEffect(() => {
      let interval;
       if (!isDisableConfirm) {
+        callQuotePrice();
          interval =  setInterval(() => {
           callQuotePrice();
-        }, 3000);
+        }, 8000);
       } else {
         clearInterval(interval)
       }
@@ -313,6 +317,10 @@ const Main = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit])
+
+  useEffect(() => {
+    callHealthCheck();
+  },[])
 
   const head = {
     title: "3ether.io | DEX",
@@ -397,7 +405,6 @@ const Main = () => {
                 }}
                 value={sendToAddress}
               />
-
             </div>
             <button onClick={e => handleSubmit(e)} className={style.confirmButton} disabled={isDisableConfirm}>
               Confirm
@@ -455,6 +462,13 @@ const Main = () => {
         <TransactionLoader />
       </Modal>
     </div >
+    {
+      !apiHealthCheck && <AlertStyled 
+      severity="error" 
+      onClose={() => setApiHealthCheck(true)}
+      >Opps!<br/>We found a problem with an API.<br/>Try to connect with your wallet or reload the page.<br/>If the issue still persists, check your internet connection.
+      </AlertStyled>
+    }
     </>
     
   )

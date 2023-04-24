@@ -12,6 +12,7 @@ import {
   TableCell as MuiTableCell,
   Typography as MuiTypography
 } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 export const Paper = styled(MuiPaper)`
 `;
@@ -71,4 +72,14 @@ export const Input = styled.input`
 &[type=number] {
   -moz-appearance: textfield;
 }
+`;
+
+export const AlertStyled = styled(Alert)`
+display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    margin: 1rem 1rem 3rem 1rem;
+    width: fit-content;
 `;

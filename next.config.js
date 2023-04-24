@@ -13,6 +13,8 @@ module.exports = withPWA({
     // NEXT_PUBLIC_MORALIS_SERVER_URL: process.env.NEXT_PUBLIC_MORALIS_SERVER_URL,
     NEXT_PUBLIC_BNB_RPC_URL: process.env.NEXT_PUBLIC_BNB_RPC_URL,
     NEXT_PUBLIC_INFURA_KEY: process.env.NEXT_PUBLIC_INFURA_KEY, //https://app.infura.io/dashboard/ethereum/1b6b3ac62a9e424e89de9a4332b8f803/settings/endpoints
+    NEXT_PUBLIC_ALCHEMY_KEY_ETH_MAINNET: process.env.NEXT_PUBLIC_ALCHEMY_KEY_ETH_MAINNET, //https://dashboard.alchemy.com/
+    NEXT_PUBLIC_ALCHEMY_KEY_MATIC_MAINNET: process.env.NEXT_PUBLIC_ALCHEMY_KEY_MATIC_MAINNET, //https://dashboard.alchemy.com/
     BACKEND_BASE_URL: process.env.NODE_ENV === 'development' ? "http://localhost:3031/api/v1" : "https://www.api.3ether.io",
   },
   eslint: {

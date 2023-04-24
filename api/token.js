@@ -89,11 +89,11 @@ const swapTokensAvailable = async ({ chainId }) => {
   }
 };
 
-const quotePrice = async ({ fromToken, toToken, walletAddress, amount, chainId }) => {
+const quotePrice = async ({ fromToken, toToken, walletAddress, amount, chainId, fee }) => {
   try {
     const response = await axios.post(
       '/token/quotePrice', {
-      fromToken, toToken, walletAddress, amount, chainId
+      fromToken, toToken, walletAddress, amount, chainId, fee
     },
       {
         validateStatus: function () {
@@ -127,12 +127,29 @@ const getTransactionApprove = async ({ fromToken, walletAddress, amount, chainId
   }
 };
 
-const getTransactionSwap = async ({ fromToken, toToken, walletAddress, destReceiver, amount, chainId }) => {
+const getTransactionSwap = async ({ fromToken, toToken, walletAddress, destReceiver, amount, chainId, referrerAddress, fee }) => {
   try {
     const response = await axios.post(
       '/token/getTransactionSwap', {
-      fromToken, toToken, walletAddress, destReceiver, amount, chainId
+      fromToken, toToken, walletAddress, destReceiver, amount, chainId, referrerAddress, fee
     },
+      {
+        validateStatus: function () {
+          return true;
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const healthCheck = async ({chainId}) => {
+  try {
+    const response = await axios.get(
+      `/token/healthcheck?chainId=${chainId}`,
       {
         validateStatus: function () {
           return true;
@@ -155,4 +172,5 @@ export {
   quotePrice,
   getTransactionApprove,
   getTransactionSwap,
+  healthCheck,
 };

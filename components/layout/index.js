@@ -1,12 +1,14 @@
 import React from 'react';
-import Header from '../header'
-import { Wrapper } from "./style"
+import Header from '../header';
+import Footer from '../footer';
+import { Wrapper } from "./style";
 
 const Layout = ({children}) => {
   return (
     <Wrapper>
       <Header />
         {children}
+        <Footer />
     </Wrapper>
   )
 }

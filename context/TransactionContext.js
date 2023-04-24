@@ -12,7 +12,12 @@ import {
   getAccount,
   resetAccount,
   setNetwork,
+  setNativeBalance,
+  setNativeToken,
 } from "../redux/slices/authenticate";
+import { getNetworkData } from '../utils/constants'
+import JSBI from 'jsbi'
+
 export const TransactionContext = React.createContext();
 
 export const TransactionProvider = ({ children }) => {
@@ -186,6 +191,23 @@ export const TransactionProvider = ({ children }) => {
       return response;
     } catch (error) {
       console.error("sendTransaction",error);
+      setIsLoading(false);
+    }
+  }
+
+  const setBalanceBaseToken = async () => {
+    try {
+   const balance = await provider.getBalance(account);
+  const network = getNetworkData(chainId);
+  const decimals = network?.decimals;
+  const logo = network?.logoURI;
+  const name = network?.network;
+  const symbol = network?.currency;
+  const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+  dispatchStore(setNativeBalance({raw: JSBI.BigInt(balance).toString(), formatted: formattedBalance}));
+  dispatchStore(setNativeToken({decimals, logo, name, symbol }));
+    } catch (error) {
+      console.error("getBalance",error);
     }
   }
 
@@ -198,6 +220,7 @@ export const TransactionProvider = ({ children }) => {
     if(!provider) return;
     // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {
+      console.log("network=>", newNetwork);
      dispatchStore(setNetwork(newNetwork));
     });
   }, [provider])
@@ -214,6 +237,10 @@ export const TransactionProvider = ({ children }) => {
       router.push('/')
     }
   }, [isLoading])
+
+  useEffect(() => {
+    setBalanceBaseToken();
+  }, [account])
 
   return (
     <TransactionContext.Provider
