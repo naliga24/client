@@ -55,10 +55,9 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-      if (!provider) return;
-      let accounts = [];
-       accounts = await provider.provider.request({ method: 'eth_accounts' });
-      if (accounts && accounts?.length) {
+      if (!provider?.provider) return;
+      const accounts = await provider.provider.request({ method: 'eth_accounts' });
+      if (accounts?.length) {
         dispatchStore(setAccount(accounts[0]));
       }
     } catch (error) {
@@ -197,7 +196,8 @@ export const TransactionProvider = ({ children }) => {
 
   const setBalanceBaseToken = async () => {
     try {
-   const balance = await provider.getBalance(account);
+  if(!account) return;
+  const balance = await provider.getBalance(account);
   const network = getNetworkData(chainId);
   const decimals = network?.decimals;
   const logo = network?.logoURI;
