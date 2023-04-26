@@ -10,7 +10,8 @@ import {
   TableBody as MuiTableBody,
   TableRow as MuiTableRow,
   TableCell as MuiTableCell,
-  Typography as MuiTypography
+  Typography as MuiTypography,
+  Avatar as MuiAvatar,
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 
@@ -82,4 +83,7 @@ display: flex;
     bottom: 0;
     margin: 1rem 1rem 3rem 1rem;
     width: fit-content;
+`;
+
+export const Avatar = styled(MuiAvatar)`
 `;

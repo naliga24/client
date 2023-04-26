@@ -45,6 +45,7 @@ import {
   Typography,
   Input,
   AlertStyled,
+  Avatar,
 } from "./main.style"
 
 
@@ -197,7 +198,7 @@ const Main = () => {
     callSwapToken();
   }
 
-  const sortTokens = () => {
+  const tokens = () => {
     let tokens = availableSwapTokens.length ? availableSwapTokens : [];
     const keyword = tokenFilter.toLowerCase();
     if (tokenFilter && tokens?.length) {
@@ -243,7 +244,7 @@ const Main = () => {
   const memoTable = () => {
     return (
       <TableBody>
-        {sortTokens().map((row) => (
+        {tokens().map((row) => (
           <TableRow
             key={row.address}
             sx={{ 'th': { border: 0 }, cursor: 'pointer', '&:hover': { background: 'rgba(201, 208, 231, 0.08)' } }}
@@ -258,7 +259,16 @@ const Main = () => {
             }}
           >
             <TableCell component="th" scope="row">
-              {row?.logoURI ? <Image src={row?.logoURI ? row.logoURI : ''} alt={row.name} height={60} width={60} /> : ''}
+              {/* {row?.logoURI ? 
+              <Image 
+              src={row?.logoURI ? row.logoURI : ''} 
+              alt={row.name} 
+              height={60} 
+              width={60} 
+              /> : ''} */}
+               <Avatar alt={row?.name} src={row?.logoURI}>
+                {!row?.logoURI && row?.symbol?.charAt(0)?.toUpperCase()}
+              </Avatar>
             </TableCell>
             <TableCell component="th" scope="row">
               <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{row.name}</Typography>
@@ -396,7 +406,7 @@ const Main = () => {
               <Input
                 type='text'
                 className={style.transferPropInput}
-                placeholder='Send to address 0x... (Optional)'
+                placeholder='Receiver address 0x...'
                 onChange={e => {
                  const value = e.target.value;
                  const isCorrectAddress = ethers.utils.isAddress(value);

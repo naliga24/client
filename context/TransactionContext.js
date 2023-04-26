@@ -14,6 +14,10 @@ import {
   setNetwork,
   setNativeBalance,
   setNativeToken,
+  resetWallet,
+  resetNativeBalance,
+  resetNativeToken,
+  resetUserTokens
 } from "../redux/slices/authenticate";
 import { getNetworkData } from '../utils/constants'
 import JSBI from 'jsbi'
@@ -32,10 +36,18 @@ export const TransactionProvider = ({ children }) => {
 
   const router = useRouter();
 
-  const disconnect = () => {
+  const logOut = () => {
     dispatchStore(resetAccount());
-    setIsLoading(false);
     dispatchStore(resetProvider());
+    dispatchStore(resetWallet());
+    dispatchStore(resetNativeBalance());
+    dispatchStore(resetNativeToken());
+    dispatchStore(resetUserTokens());
+    setIsLoading(false);
+  }
+
+  const disconnect = () => {
+    logOut();
     if (connector && connector.deactivate) {
       connector.deactivate()
     }
@@ -55,11 +67,13 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
+      console.log("checkIfWalletIsConnectedWeb3=>");
       if (!provider?.provider) return;
-      const accounts = await provider.provider.request({ method: 'eth_accounts' });
-      if (accounts?.length) {
-        dispatchStore(setAccount(accounts[0]));
-      }
+        const accounts = await provider.provider.request({ method: 'eth_accounts' });
+        console.log("checkIfWalletIsConnectedWeb3=>", accounts);
+        if (accounts?.length) {
+          dispatchStore(setAccount(accounts[0]));
+        }
     } catch (error) {
       console.error("checkIfWalletIsConnectedWeb3",error);
     }
@@ -189,7 +203,8 @@ export const TransactionProvider = ({ children }) => {
       })
       return response;
     } catch (error) {
-      console.error("sendTransaction",error);
+      console.error("sendTransaction", error);
+      alert("Transaction failure. Please reload the page and try again.");
       setIsLoading(false);
     }
   }
@@ -240,7 +255,7 @@ export const TransactionProvider = ({ children }) => {
 
   useEffect(() => {
     setBalanceBaseToken();
-  }, [account])
+  }, [account, chainId])
 
   return (
     <TransactionContext.Provider

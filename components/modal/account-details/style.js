@@ -1,5 +1,18 @@
 import styled from "styled-components";
 import { VscChromeClose as VscChromeCloseIcon } from 'react-icons/vsc'
+import {
+  Paper as MuiPaper,
+  InputBase as MuiInputBase,
+  IconButton as MUiIconButton,
+  Divider as MuiDivider,
+  TableContainer as MuiTableContainer,
+  Table as MuiTable,
+  TableBody as MuiTableBody,
+  TableRow as MuiTableRow,
+  TableCell as MuiTableCell,
+  Typography as MuiTypography,
+  Avatar as MuiAvatar,
+} from '@mui/material';
 
 export const ContainerModal = styled.div`
   margin: 0px 0px 2rem;
@@ -104,3 +117,26 @@ export const ClipboardGroup = styled.div`
   align-items: center;
 `;
 
+export const TableContainer = styled(MuiTableContainer)`
+max-height: 50vh;
+overflow-x: hidden !important;
+`;
+
+export const Table = styled(MuiTable)`
+background-color: #191B1F;
+`;
+
+export const TableBody = styled(MuiTableBody)`
+`;
+
+export const TableRow = styled(MuiTableRow)`
+`;
+
+export const TableCell = styled(MuiTableCell)`
+`;
+
+export const Paper = styled(MuiPaper)`
+`;
+
+export const Avatar = styled(MuiAvatar)`
+`;

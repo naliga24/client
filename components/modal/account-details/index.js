@@ -1,19 +1,25 @@
 import React,{
     useState,
-  } from 'react'
+  } from 'react';
  import { 
     FiCopy 
-} from 'react-icons/fi'
-import { BsCheck2Circle } from 'react-icons/bs'
+} from 'react-icons/fi';
+import { BsCheck2Circle } from 'react-icons/bs';
 import { 
-    HiExternalLink } from 'react-icons/hi'
+    HiExternalLink } from 'react-icons/hi';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { NETWORKS_AVAILABLE } from '../../../utils/constants';
-import Modal from 'react-modal'
-
+import Modal from 'react-modal';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import useAppSelector from "../../../hooks/useAppSelector";
 import {
   getWallet,
+  getUserTokens,
+  getNativeBalance,
+  getNativeToken,
 } from "../../../redux/slices/authenticate";
 
 Modal.setAppElement('#__next')
@@ -31,6 +37,13 @@ import {
     HelperItem,
     VscChromeClose,
     ClipboardGroup,
+    TableContainer,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
+    //Paper,
+    Avatar,
   } from "./style";
 
 const customStyles = {
@@ -58,9 +71,13 @@ const customStyles = {
     disconnect,
   }) => {
     const wallet = useAppSelector(getWallet);
+    const userTokens = useAppSelector(getUserTokens);
+    const nativeBalance = useAppSelector(getNativeBalance);
+    const nativeToken = useAppSelector(getNativeToken);
 
     const [copied, setCopied] = useState(false)
-  
+    const [value, setValue] = useState(0);
+
     const onCopied = () => {
       setCopied(true)
       setTimeout(function () {
@@ -71,6 +88,45 @@ const customStyles = {
     const getNetworkMenu = () => {
       return NETWORKS_AVAILABLE.find((network) => network.chainId === currentNetwork.chainId);
     };
+
+    const getAllUserTokens = () => {
+      const baseToken = {...nativeToken, balance: nativeBalance}
+      const allTokens = [baseToken, ...userTokens]
+      return allTokens;
+    };
+
+    const TabPanel = ()=> {
+
+      return (
+             <TableContainer>
+              <Table sx={{ maxWidth: '100%' }} aria-label="token balances table">
+              <TableBody>
+              {getAllUserTokens()?.map((row, index) => (
+          <TableRow
+            key={`${row.symbol}-${index}`}
+            sx={{ 'th': { border: 0 }, cursor: 'pointer', '&:hover': { background: 'rgba(201, 208, 231, 0.08)' } }}
+          >
+            <TableCell component="th" scope="row">
+              <Avatar alt={row?.name} src={row?.logo}>
+                {!row?.logo && row?.symbol?.charAt(0)?.toUpperCase()}
+              </Avatar>
+            </TableCell>
+            <TableCell sx={{ width: '100%' }} component="th" scope="row">
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{row.name}</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'rgb(94, 104, 135)' }}>{parseFloat(row?.balance?.formatted).toFixed(6)}&nbsp;&nbsp;{row?.symbol}</Typography>
+            </TableCell>
+          </TableRow>
+        ))}
+              </TableBody>
+              </Table>
+            </TableContainer>
+      );
+    }
+
+    const handleChange = (event, newValue) => {
+      setValue(newValue);
+    };
+  
   
     return (
       <Modal isOpen={isOpen} onRequestClose={() => closeModal()} style={customStyles}>
@@ -119,6 +175,22 @@ const customStyles = {
                 </Helper>
               </HelperItem>
             </HelperGroup>
+          </DetailsGroupModal>
+          <DetailsGroupModal>
+          <Box sx={{ width: '100%' }}>
+      <Box 
+      sx={{ borderBottom: 1, borderColor: 'divider' }}
+      >
+        <Tabs 
+       value={value} 
+        onChange={handleChange} 
+        aria-label="token balance details tabs"
+        >
+          <Tab label="Assets" />
+        </Tabs>
+      </Box>
+      <TabPanel />
+    </Box>
           </DetailsGroupModal>
         </ContainerModal>
       </Modal>

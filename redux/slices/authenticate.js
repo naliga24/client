@@ -1,24 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const balanceEmpty = {raw: '', formatted: ''};
+const tokenEmpty = { decimals: null, logo: '', name: '', symbol: ''};
+const networkEmpty = {chainId: null, ensAddress: "", name: ""}
+
 const initialState = {
   account: "",
   provider: "",
   wallet: "",
-  network: {
-    chainId: null,
-    ensAddress: "",
-    name: "",
-  },
-  nativeBalance: {
-    raw: '',
-    formatted: '',
-  },
-  nativeToken: {
-   decimals: null,
-   logo: '',
-   name: '',
-   symbol: '',
-  },
+  network: networkEmpty,
+  nativeBalance: balanceEmpty,
+  nativeToken: tokenEmpty,
   userTokens: [],
   swapAvailableTokens: [],
 };
@@ -53,21 +45,14 @@ export const authenticate = createSlice({
       }
     },
     resetNetwork: (state) => {
-      state.network = {
-        chainId: null,
-        ensAddress: "",
-        name: "",
-      }
+      state.network = networkEmpty;
     },
     setNativeBalance: (state, action) => {
       state.nativeBalance.raw = action.payload.raw;
       state.nativeBalance.formatted = action.payload.formatted;
     },
     resetNativeBalance: (state) => {
-      state.nativeBalance = {
-        raw: '',
-        formated: '',
-      };
+      state.nativeBalance = balanceEmpty;
     },
     setNativeToken: (state, action) => {
       state.nativeToken.decimals = action.payload.decimals;
@@ -76,12 +61,7 @@ export const authenticate = createSlice({
       state.nativeToken.symbol = action.payload.symbol;
     },
     resetNativeToken: (state) => {
-      state.nativeBalance = {
-        decimals: null,
-        logo: '',
-        name: '',
-        symbol: '',
-      };
+      state.nativeToken = tokenEmpty;
     },
     setUserTokens: (state, action) => {
       state.userTokens = action.payload;

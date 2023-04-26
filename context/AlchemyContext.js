@@ -20,7 +20,7 @@ export const AlchemyProvider = ({ children }) => {
   let alchemy;
 
   useEffect(() => {
-  if(account){
+  if(account && chainId){
     let apiKey;
     let network;
      
@@ -76,7 +76,7 @@ export const AlchemyProvider = ({ children }) => {
       (res) => console.log("alchemy_pendingTransactions=>",res)
       );
   }
-  }, [account])
+  }, [account, chainId, swapAvailableTokens?.length])
 
   return (
     <AlchemyContext.Provider
