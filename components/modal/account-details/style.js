@@ -2,15 +2,11 @@ import styled from "styled-components";
 import { VscChromeClose as VscChromeCloseIcon } from 'react-icons/vsc'
 import {
   Paper as MuiPaper,
-  InputBase as MuiInputBase,
-  IconButton as MUiIconButton,
-  Divider as MuiDivider,
   TableContainer as MuiTableContainer,
   Table as MuiTable,
   TableBody as MuiTableBody,
   TableRow as MuiTableRow,
   TableCell as MuiTableCell,
-  Typography as MuiTypography,
   Avatar as MuiAvatar,
 } from '@mui/material';
 
