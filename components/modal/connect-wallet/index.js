@@ -50,11 +50,14 @@ const customStyles = {
       const tryActivation = useCallback(
         async (connection) => {
           try {
-            await connection.connector.activate()
-            dispatchStore(setProvider(connection.type));
-            dispatchStore(setWallet(connection.name));
+            console.log("connection=>", connection);
+            await connection?.connector?.activate()
+            dispatchStore(setProvider(connection?.type));
+            dispatchStore(setWallet(connection?.name));
           } catch (error) {
             console.error("tryActivation", error);
+            //connection.connector.deactivate();
+            //connection.connector.resetState()
           }
         },
         []
@@ -76,7 +79,7 @@ const customStyles = {
                  closeModal();
                }}
                >
-                  <Image src={connection.icon} height={40} width={40} /> <Typography variant="subtitle1">{connection.name}</Typography>
+                  <Image alt={`${connection.name} wallet icon`} src={connection.icon} height={40} width={40} /> <Typography variant="subtitle1">{connection.name}</Typography>
                 </Item>
               )
             })}

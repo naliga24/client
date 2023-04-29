@@ -9,6 +9,7 @@ import {
   setUserTokens,
   getSwapAvailableTokens,
 } from "../redux/slices/authenticate";
+import { SupportedChainId } from '../utils/chains'
 
 export const AlchemyContext = React.createContext();
 
@@ -20,18 +21,25 @@ export const AlchemyProvider = ({ children }) => {
   let alchemy;
 
   useEffect(() => {
+    console.log("useEffect");
   if(account && chainId){
     let apiKey;
     let network;
      
-    if(chainId && chainId === 1){
+    if(chainId && chainId === SupportedChainId.MAINNET){
       network = Network.ETH_MAINNET;
       apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_ETH_MAINNET;
-  
-    }else if(chainId && chainId === 137){
+    } else if(chainId && chainId === SupportedChainId.POLYGON){
       network = Network.MATIC_MAINNET; 
       apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_MATIC_MAINNET;
+    } else if(chainId && chainId === SupportedChainId.ARBITRUM_ONE){
+      network = Network.ARB_MAINNET; 
+      apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_ARBITRUM_MAINNET;
+    } else if(chainId && chainId === SupportedChainId.OPTIMISM){
+      network = Network.OPT_MAINNET; 
+      apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_OPTIMISM_MAINNET;
     }
+  
   
     const settings = {
       apiKey,
@@ -76,7 +84,7 @@ export const AlchemyProvider = ({ children }) => {
       (res) => console.log("alchemy_pendingTransactions=>",res)
       );
   }
-  }, [account, chainId, swapAvailableTokens?.length])
+  }, [account, chainId, swapAvailableTokens])
 
   return (
     <AlchemyContext.Provider

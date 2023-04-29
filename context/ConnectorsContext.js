@@ -6,7 +6,7 @@ import { useMemo, useEffect } from 'react';
 import useEagerlyConnect from '../hooks/useEagerlyConnect'
 
 const ConnectorsProvider = ({ children })=> {
-  useEagerlyConnect()
+  useEagerlyConnect();
   const connections = getConnections();
   const key = useMemo(() => connections.map((connection) => connection.name).join('-'), [connections]);
   const connectors = connections.map(({ hooks, connector }) => [connector, hooks]);

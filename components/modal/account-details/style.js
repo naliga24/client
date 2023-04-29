@@ -16,10 +16,10 @@ export const ContainerModal = styled.div`
   border: 1px solid rgb(33, 36, 41);
   box-shadow: rgb(0 0 0 / 5%) 0px 4px 8px 0px;
   padding: 0px;
-  width: 50vw;
   overflow: hidden auto;
   align-self: center;
   min-width: 420px;
+  max-width: 550px;
   min-height: 20vh;
   display: flex;
   border-radius: 20px;

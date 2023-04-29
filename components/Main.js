@@ -375,7 +375,12 @@ const Main = () => {
               }}>
                 <div className={style.currencySelectorContent}>
                   <div className={style.currencySelectorIcon}>
-                    {selectFromToken ? <Image src={selectFromToken ? selectFromToken.logoURI : null} alt={selectFromToken ? selectFromToken.symbol : ''} height={20} width={20} /> : 'Select token'}
+                    {selectFromToken ? 
+                    <Image 
+                    src={selectFromToken ? selectFromToken.logoURI : null} 
+                    alt={selectFromToken ? selectFromToken.symbol : 'no token selected'} 
+                    height={20} width={20} 
+                    /> : 'Select token'}
                   </div>
                   <div className={style.currencySelectorTicker}>{selectFromToken ? selectFromToken.symbol : ''}</div>
                   <AiOutlineDown className={style.currencySelectorArrow} />
