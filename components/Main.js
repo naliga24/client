@@ -191,6 +191,7 @@ const Main = () => {
       console.log("callHealthCheck=>", isGoodHealth);
     } catch (error) {
       console.log(error)
+      setApiHealthCheck(false);
     }
   }
 

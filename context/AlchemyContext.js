@@ -66,7 +66,7 @@ export const AlchemyProvider = ({ children }) => {
         const symbol = metadata?.symbol;
         const decimals = metadata?.decimals;
         const balance = {raw, formatted};
-        const fondToken = swapAvailableTokens?.find((availableToken)=>availableToken?.address?.toLowerCase() === contractAddress?.toLowerCase());
+        const fondToken = swapAvailableTokens?.find((availableToken)=>availableToken?.address?.trim().toLowerCase() === contractAddress?.trim().toLowerCase());
         tokens.push({
           name, symbol, balance, decimals, logo: fondToken?.logoURI,
         });
@@ -84,7 +84,8 @@ export const AlchemyProvider = ({ children }) => {
       (res) => console.log("alchemy_pendingTransactions=>",res)
       );
   }
-  }, [account, chainId, swapAvailableTokens])
+  console.log("swapAvailableTokens=>", swapAvailableTokens);
+  }, [account, chainId, swapAvailableTokens?.length])
 
   return (
     <AlchemyContext.Provider
