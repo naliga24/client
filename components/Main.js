@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Head from 'next/head';
+import { withTheme } from "styled-components";
 import { RiSettings3Fill } from 'react-icons/ri'
 import { AiOutlineDown } from 'react-icons/ai'
 import React, { useContext, useEffect, useState, useMemo } from 'react'
@@ -51,6 +52,7 @@ import {
   BalanceMaxGroup,
   Button,
   TypographyBalance,
+  InputRow,
 } from "./main.style"
 
 
@@ -100,6 +102,8 @@ const Main = () => {
   const [isSendToAddressCorrect, setIsSendToAddressCorrect] = useState(true);
   const [isDisableConfirm, setIsDisableConfirm] = useState(true);
   const [apiHealthCheck, setApiHealthCheck] = useState(true);
+  const [, setTxApproveHash] = useState("");
+  const [, setTxSwapHash] = useState("");
   //const [uuid, setUuid] = useState(uuidv4());
 
   const currentAccount = useAppSelector(getAccount);
@@ -137,18 +141,32 @@ const Main = () => {
 
           await getTransactionApprove(paramsApprove).then(async (txApprove) => {
             const { data: { payload: payloadApprove = {} } = {} } = txApprove;
-            payloadApprove.chainId = chainId;
-            payloadApprove.from = currentAccount;
-            await sendTransaction(payloadApprove).then(async () => {
-              await getTransactionSwap(paramsSwap).then(async (txSwap) => {
-                const { data: { payload: payloadSwap = {} } = {} } = txSwap;
-                payloadSwap.chainId = chainId;
-                await sendTransaction(payloadSwap).then(async () => {
-                  setLoadingAll(false);
-                  clearData();
-                })
-              });
-            })
+            if(!payloadApprove?.error){
+              payloadApprove.chainId = chainId;
+              payloadApprove.from = currentAccount;
+              console.log("txApprove=>", txApprove);
+              await sendTransaction(payloadApprove, "approve").then(async (txApproveHash) => {
+                setTxApproveHash(txApproveHash);
+                await getTransactionSwap(paramsSwap).then(async (txSwap) => {
+                  console.log("txSwap=>", txSwap);
+                  const { data: { payload: payloadSwap = {} } = {} } = txSwap;
+                  if(!payloadSwap?.error){
+                    payloadSwap.chainId = chainId;
+                    await sendTransaction(payloadSwap, "swap").then(async (txSwapHash) => {
+                      setTxSwapHash(txSwapHash);
+                      setLoadingAll(false);
+                      clearData();
+                    }) 
+                  } else {
+                    setLoadingAll(false);
+                    alert("Sorry got error for swapped, Please try again.")
+                  }
+                });
+              })
+            } else {
+              setLoadingAll(false);
+              alert("Sorry got error for approval, Please try again.")
+            }
           });
     } catch (error) {
       console.log("callSwapToken:",error)
@@ -401,7 +419,7 @@ const Main = () => {
                 <RiSettings3Fill />
               </div>
             </div>
-            <div className={style.transferPropContainer}>
+            <InputRow className={style.transferPropContainer}>
               <InputGroup>
                 <Input
                 type='number'
@@ -438,7 +456,7 @@ const Main = () => {
               selectFromToken && getFromTokenBalance() && <Button onClick={setMaxTokeTradeBalance}>Max</Button>
               }
               </BalanceMaxGroup>
-            </div>
+            </InputRow>
             <div className={style.transferPropContainer}>
             <InputGroup>
               <Input
@@ -536,7 +554,10 @@ const Main = () => {
           </div>
       }
 
-      <Modal isOpen={!!router.query.loading} style={customStyles}>
+      <Modal 
+      isOpen={!!router.query.loading} 
+      style={customStyles}
+      >
         <TransactionLoader />
       </Modal>
     </div >
@@ -552,4 +573,4 @@ const Main = () => {
   )
 }
 
-export default Main;
+export default withTheme(Main);

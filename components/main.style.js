@@ -13,6 +13,7 @@ import {
   Typography as MuiTypography,
   Avatar as MuiAvatar,
   Button as MuiButton,
+  //Dialog as MuiDialog,
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 
@@ -90,8 +91,10 @@ export const Avatar = styled(MuiAvatar)`
 `;
 
 export const InputGroup = styled.div`
+&&& {
   display: flex;
   align-items: baseline;
+}
 `;
 
 
@@ -108,6 +111,13 @@ export const Button = styled(MuiButton)`
 
 export const TypographyBalance = styled(MuiTypography)`
 ${({ theme: {palette: {custom}} }) => `
-color: ${custom.grayMidDark} !important;
+  color: ${custom.grayMidDark} !important;
 `}
 `;
+
+export const InputRow = styled.div`
+`;
+
+// export const Dialog = styled(MuiDialog)`
+
+// `;

@@ -1,5 +1,4 @@
 import React from 'react';
-import { css } from '@emotion/react'
 import { MoonLoader } from 'react-spinners'
 
 const style = {
@@ -7,17 +6,15 @@ const style = {
   title: `font-semibold text-xl mb-12`,
 }
 
-const cssOverride = css`
-  display: block;
-  margin: 0 auto;
-  border-color: white;
-`
-
 const TransactionLoader = () => {
   return (
     <div className={style.wrapper}>
       <div className={style.title}>Transaction in progress...</div>
-      <MoonLoader color={'#fff'} loading={true} css={cssOverride} size={50} />
+      <MoonLoader 
+      color={'#fff'} 
+      loading={true} 
+      size={50} 
+      />
     </div>
   )
 }

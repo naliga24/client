@@ -178,32 +178,39 @@ export const TransactionProvider = ({ children }) => {
   }
 
   const sendTransaction = async (
-    transaction,
+    transaction, type
   ) => {
     try {
+      console.log("type=>", type);
       if (!provider) return;
 
       const { data, gasPrice, gas, to, from, value, chainId } = transaction;
+
+      // console.log("sendTransaction0=>",gas, JSBI.BigInt(gas).toString(), value, JSBI.BigInt(gas).toString(16), ethers.BigNumber.from(value).toHexString(), ethers.BigNumber.from(String(value)).toHexString(), ethers.BigNumber.from(value));
+      // console.log("sendTransaction1=>",ethers.utils.hexlify(chainId), ethers.BigNumber.from(chainId).toHexString(), ethers.BigNumber.from(gasPrice).toHexString(), ethers.utils.hexlify(parseInt(gasPrice)), typeof ethers.utils.hexlify(gas), typeof ethers.utils.hexlify(gas).toString(), typeof value);
+      // return;
 
       const response = await provider.provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
-            gasPrice: ethers.utils.hexlify(parseInt(gasPrice)),
-            gas: ethers.utils.hexlify(gas),
+            gasPrice: ethers.BigNumber.from(gasPrice).toHexString(),
+            gas: ethers.BigNumber.from(gas).toHexString(),
             to,
             from,
             value: ethers.BigNumber.from(value).toHexString(),
             data,
-            chainId: ethers.utils.hexlify(chainId),
+            chainId: ethers.BigNumber.from(chainId).toHexString(),
           }
         ],
       })
+      console.log("response=>", response, type);
       return response;
     } catch (error) {
-      console.error("sendTransaction", error);
+      console.error("sendTransaction:", type, error);
       alert("Transaction failure. Please reload the page and try again.");
       setIsLoading(false);
+      //console.log("sendTransaction=>", value, ethers.BigNumber.from(value).toHexString(), ethers.BigNumber.from(String(value)).toHexString());
     }
   }
 
