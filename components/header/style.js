@@ -3,6 +3,7 @@ import {
   Menu as MuiMenu,
   MenuItem as MuiMenuItem,
   Typography as MuiTypography,
+  Avatar as MuiAvatar,
 } from '@mui/material';
 
 export const Menu = styled(MuiMenu)`
@@ -32,3 +33,5 @@ export const NetworkName = styled(MuiTypography)`
 font-weight: 600 !important;
 color: white;
 `;
+
+export const Avatar = styled(MuiAvatar)``;

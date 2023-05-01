@@ -35,8 +35,8 @@ import {
   Menu,
   MenuItem,
   MenuItemButton,
-  NetworkLogo,
   NetworkName,
+  Avatar,
 } from "./style"
 
 const style = {
@@ -120,7 +120,7 @@ const Header = () => {
         </div>
         {
           <Desktop>
-                    <div className={style.nav}>
+            <div className={style.nav}>
           <div className={style.navItemsContainer}>
             <div
               onClick={() => setSelectedNav('swap')}
@@ -149,9 +149,9 @@ const Header = () => {
         <div className={style.buttonsContainer}>
           <div className={`${style.button} ${style.buttonPadding}`} onClick={handleClickNetwork}>
             <div className={style.buttonIconContainer}>
-              <NetworkLogo src={getNetworkMenu() ? getNetworkMenu().logoURI : ''} />
+              <Avatar sx={{ width: 28, height: 28 }} alt={`${getNetworkMenu()?.currency} logo`} src={getNetworkMenu() ? getNetworkMenu().logoURI : ''} />
             </div>
-            <p>{getNetworkMenu() ? getNetworkMenu().network : ''}</p>
+            <p>{getNetworkMenu() ? getNetworkMenu()?.network : ''}</p>
             <div className={style.buttonIconContainer}>
               <AiOutlineDown />
             </div>
@@ -167,7 +167,7 @@ const Header = () => {
           >
             {NETWORKS_AVAILABLE.map((network) => <MenuItem key={network.chainId} onClick={() => handleClose(network)}>
               <MenuItemButton onClick={() => changeNetwork(network)}>
-                <NetworkLogo src={network.logoURI} />
+                <Avatar sx={{ width: 28, height: 28 }} alt={`${network?.currency} logo`} src={network.logoURI} />
                 <NetworkName variant='subtitle2'>{network.network}</NetworkName>
               </MenuItemButton>
             </MenuItem>)}

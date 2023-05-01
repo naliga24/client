@@ -67,10 +67,8 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-      console.log("checkIfWalletIsConnectedWeb3=>");
       if (!provider?.provider) return;
         const accounts = await provider.provider.request({ method: 'eth_accounts' });
-        console.log("checkIfWalletIsConnectedWeb3=>", accounts);
         if (accounts?.length) {
           dispatchStore(setAccount(accounts[0]));
         }

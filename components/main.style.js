@@ -12,6 +12,7 @@ import {
   TableCell as MuiTableCell,
   Typography as MuiTypography,
   Avatar as MuiAvatar,
+  Button as MuiButton,
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 
@@ -76,14 +77,37 @@ export const Input = styled.input`
 `;
 
 export const AlertStyled = styled(Alert)`
-display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
-    margin: 1rem 1rem 3rem 1rem;
-    width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  margin: 1rem 1rem 3rem 1rem;
+  width: fit-content;
 `;
 
 export const Avatar = styled(MuiAvatar)`
+`;
+
+export const InputGroup = styled.div`
+  display: flex;
+  align-items: baseline;
+`;
+
+
+export const BalanceMaxGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+
+export const Button = styled(MuiButton)`
+
+`;
+
+export const TypographyBalance = styled(MuiTypography)`
+${({ theme: {palette: {custom}} }) => `
+color: ${custom.grayMidDark} !important;
+`}
 `;

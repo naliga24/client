@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
-import { Network, Alchemy } from 'alchemy-sdk';
 import { useWeb3React } from '@web3-react/core';
 import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 import JSBI from 'jsbi';
 import { ethers } from 'ethers';
+import { Alchemy, Network } from 'alchemy-sdk';
 import {
   setUserTokens,
   getSwapAvailableTokens,
@@ -21,7 +21,6 @@ export const AlchemyProvider = ({ children }) => {
   let alchemy;
 
   useEffect(() => {
-    console.log("useEffect");
   if(account && chainId){
     let apiKey;
     let network;
@@ -68,7 +67,7 @@ export const AlchemyProvider = ({ children }) => {
         const balance = {raw, formatted};
         const fondToken = swapAvailableTokens?.find((availableToken)=>availableToken?.address?.trim().toLowerCase() === contractAddress?.trim().toLowerCase());
         tokens.push({
-          name, symbol, balance, decimals, logo: fondToken?.logoURI,
+          address: contractAddress, name, symbol, balance, decimals, logo: fondToken?.logoURI,
         });
      }
      dispatchStore(setUserTokens(tokens));
@@ -84,7 +83,6 @@ export const AlchemyProvider = ({ children }) => {
       (res) => console.log("alchemy_pendingTransactions=>",res)
       );
   }
-  console.log("swapAvailableTokens=>", swapAvailableTokens);
   }, [account, chainId, swapAvailableTokens?.length])
 
   return (

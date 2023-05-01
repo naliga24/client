@@ -97,6 +97,12 @@ export const getUserTokens = (state) => state.authenticate.userTokens;
 
 export const getSwapAvailableTokens = (state) => state.authenticate.swapAvailableTokens;
 
+export const getAllUserTokens = (state) => {
+  const nativeToken = {...state?.authenticate?.nativeToken, balance: state?.authenticate?.nativeBalance, isNativeToken: true}
+  const allTokens = [nativeToken, ...state?.authenticate?.userTokens]
+  return allTokens;
+}
+
 export const {
   setProvider,
   resetProvider,

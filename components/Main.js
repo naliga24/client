@@ -25,6 +25,7 @@ import {
   getAccount,
   getNetwork,
   setSwapAvailableTokens,
+  getAllUserTokens,
 } from "../redux/slices/authenticate";
 import {
   openWalletModal,
@@ -46,6 +47,10 @@ import {
   Input,
   AlertStyled,
   Avatar,
+  InputGroup,
+  BalanceMaxGroup,
+  Button,
+  TypographyBalance,
 } from "./main.style"
 
 
@@ -55,7 +60,7 @@ const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 z-10`,
   content: `bg-[#191B1F] w-[30rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
-  transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between`,
+  transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between flex-col`,
   transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl`,
   currencySelector: `flex`,
   currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl sm:text-base md:text-lg font-medium cursor-pointer p-2 mt-[-0.2rem]`,
@@ -99,6 +104,7 @@ const Main = () => {
 
   const currentAccount = useAppSelector(getAccount);
   const currentNetwork = useAppSelector(getNetwork)
+  const allUserTokens = useAppSelector(getAllUserTokens)
   const dispatchStore = useAppDispatch();
 
   const { provider } = useWeb3React();
@@ -152,9 +158,9 @@ const Main = () => {
 
   const callSwapTokenAvailable = async () => {
     try {
-      const params = { chainId: currentNetwork.chainId };
+      const params = { chainId: currentNetwork?.chainId };
       const response = await swapTokensAvailable(params);
-      if (response && response.data && response.data.payload && response.data.payload.tokens && Object.values(response.data.payload.tokens).length) {
+      if (response?.data?.payload?.tokens && Object.values(response.data.payload.tokens)?.length) {
         const tokens = Object.values(response.data.payload.tokens);
         setAvailableSwapTokens(tokens);
         dispatchStore(setSwapAvailableTokens(tokens));
@@ -166,10 +172,10 @@ const Main = () => {
 
   const callQuotePrice = async () => {
     try {
-      const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex));
+      const amount = String(Number(ethers.utils.parseUnits(unit, selectFromToken?.decimals)?._hex));
       const params = { fromToken: selectFromToken, toToken: selectToToken, walletAddress: currentAccount, amount, chainId: currentNetwork.chainId, fee: PLATFORM_FEE };
       const response = await quotePrice(params);
-      if (response && response.data && response.data.payload) {
+      if (response?.data?.payload) {
         const payload = response.data.payload;
         const estimatedGas = payload.estimatedGas;
         const gasPrice = await provider.getGasPrice();
@@ -223,10 +229,35 @@ const Main = () => {
     }
   }
 
+  const getGasFormatted = (gasBuffer = 1) => {
+    const chainId = currentNetwork.chainId;
+    const decimals = getNetworkData(chainId).decimals;
+    const gasFormatted = ethers.utils.formatUnits(String(totalGas * gasBuffer), decimals);
+    return gasFormatted;
+  }
+
   const EstimateGas = () => {
     const chainId = currentNetwork.chainId;
-    const gasBuffer = 1;
-    return <div>Estimated Fee: {ethers.utils.formatUnits(String(totalGas * gasBuffer), getNetworkData(chainId).decimals)} {getNetworkData(chainId).currency}</div>;
+    const gas = getGasFormatted();
+    const currency = getNetworkData(chainId)?.currency;
+    return <div>Estimated Fee: {gas} {currency}</div>;
+  }
+
+  const setMaxTokeTradeBalance = () => {
+  const unit = getFromTokenBalance()?.balance?.formatted || 0;
+   setUnit(unit);
+  }
+
+  const getFromTokenBalance = () => {
+    if(!selectFromToken) return;
+    const tokenBalance = allUserTokens.find((userToken)=>userToken?.symbol === selectFromToken?.symbol)
+    return tokenBalance;
+  }
+ 
+  const getToTokenBalance = () => {
+    if(!selectToToken) return;
+    const tokenBalance = allUserTokens.find((userToken)=>userToken?.symbol === selectToToken?.symbol)
+    return tokenBalance;
   }
 
   const clearData = () => {
@@ -252,21 +283,15 @@ const Main = () => {
             onClick={() => {
               if (selectType === 'from') {
                 setSelectFromToken(row);
+                setUnit('');
               } else if (selectType === 'to') {
                 setSelectToToken(row);
               }
-              setSelectType('')
+              setSelectType('');
               setTokenFilter('');
             }}
           >
             <TableCell component="th" scope="row">
-              {/* {row?.logoURI ? 
-              <Image 
-              src={row?.logoURI ? row.logoURI : ''} 
-              alt={row.name} 
-              height={60} 
-              width={60} 
-              /> : ''} */}
                <Avatar alt={row?.name} src={row?.logoURI}>
                 {!row?.logoURI && row?.symbol?.charAt(0)?.toUpperCase()}
               </Avatar>
@@ -315,7 +340,7 @@ const Main = () => {
   }, [unit, quote?.fromToken?.address, quote?.toToken?.address, quote?.fromTokenAmount, quote?.estimatedGas])
 
   useEffect(() => {
-    const disabled = !selectFromToken?.address || !selectToToken?.address || !(parseFloat(unit) > 0) || isLoading || !isSendToAddressCorrect;
+    const disabled = !selectFromToken?.address || !selectToToken?.address || (selectFromToken?.address === selectToToken?.address) || !(parseFloat(unit) > 0) || isLoading || !isSendToAddressCorrect;
     setIsDisableConfirm(disabled);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectFromToken?.address, selectToToken?.address, unit, isLoading, isSendToAddressCorrect])
@@ -333,8 +358,24 @@ const Main = () => {
     callHealthCheck();
   },[])
 
+  const updateUnitForNativeFromToken = () => {
+    const isFromTokenNative = getFromTokenBalance();
+    const gasFormatted = getGasFormatted(1.5);
+    const unitDeductGas = String(parseFloat(isFromTokenNative?.balance?.formatted) - parseFloat(gasFormatted));
+    setUnit(unitDeductGas);
+  }
+  
+  useEffect(() => {
+    const isFromTokenNative = getFromTokenBalance();
+    const gasFormatted = getGasFormatted(1.5);
+    const isNotEnoughtFunds = parseFloat(unit) > (parseFloat(isFromTokenNative?.balance?.formatted) - parseFloat(gasFormatted))
+    if(Object.keys(quote)?.length && isFromTokenNative?.isNativeToken && isNotEnoughtFunds){
+      updateUnitForNativeFromToken();
+    }
+  },[unit, quote?.estimatedGas, quote?.fromToken?.address])
+
   const head = {
-    title: "3ether.io | DEX",
+    title: "3EtHeR.io | DEX",
   }
 
   return (
@@ -361,11 +402,12 @@ const Main = () => {
               </div>
             </div>
             <div className={style.transferPropContainer}>
-              <Input
+              <InputGroup>
+                <Input
                 type='number'
-                className={style.transferPropInput}
+               className={style.transferPropInput}
                 placeholder='0.0'
-                pattern='^[0-9]*[.,]?[0-9]*$'
+               pattern='^[0-9]*[.,]?[0-9]*$'
                 onChange={e => {
                   setUnit(e.target.value);
                 }}
@@ -387,8 +429,18 @@ const Main = () => {
                   <AiOutlineDown className={style.currencySelectorArrow} />
                 </div>
               </div>
+              </InputGroup>
+              <BalanceMaxGroup>
+                {
+              selectFromToken && <TypographyBalance>Balance: {getFromTokenBalance()?.balance?.formatted || 0}</TypographyBalance>
+                }
+              {
+              selectFromToken && getFromTokenBalance() && <Button onClick={setMaxTokeTradeBalance}>Max</Button>
+              }
+              </BalanceMaxGroup>
             </div>
             <div className={style.transferPropContainer}>
+            <InputGroup>
               <Input
                 type='number'
                 className={style.transferPropInput}
@@ -407,6 +459,12 @@ const Main = () => {
                   <AiOutlineDown className={style.currencySelectorArrow} />
                 </div>
               </div>
+              </InputGroup>
+              <BalanceMaxGroup>
+              {
+              selectToToken && <TypographyBalance>Balance: {getToTokenBalance()?.balance?.formatted || 0}</TypographyBalance>
+                }
+              </BalanceMaxGroup>
             </div>
             <div className={style.transferPropContainer}>
               <Input
@@ -422,7 +480,11 @@ const Main = () => {
                 value={sendToAddress}
               />
             </div>
-            <button onClick={e => handleSubmit(e)} className={style.confirmButton} disabled={isDisableConfirm}>
+            <button 
+            onClick={e => handleSubmit(e)} 
+            className={style.confirmButton} 
+            disabled={isDisableConfirm}
+            >
               Confirm
             </button>
             {

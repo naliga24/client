@@ -17,9 +17,7 @@ import Typography from '@mui/material/Typography';
 import useAppSelector from "../../../hooks/useAppSelector";
 import {
   getWallet,
-  getUserTokens,
-  getNativeBalance,
-  getNativeToken,
+  getAllUserTokens,
 } from "../../../redux/slices/authenticate";
 
 Modal.setAppElement('#__next')
@@ -71,9 +69,7 @@ const customStyles = {
     disconnect,
   }) => {
     const wallet = useAppSelector(getWallet);
-    const userTokens = useAppSelector(getUserTokens);
-    const nativeBalance = useAppSelector(getNativeBalance);
-    const nativeToken = useAppSelector(getNativeToken);
+    const allUserTokens = useAppSelector(getAllUserTokens);
 
     const [copied, setCopied] = useState(false)
     const [value, setValue] = useState(0);
@@ -89,19 +85,13 @@ const customStyles = {
       return NETWORKS_AVAILABLE.find((network) => network.chainId === currentNetwork.chainId);
     };
 
-    const getAllUserTokens = () => {
-      const baseToken = {...nativeToken, balance: nativeBalance}
-      const allTokens = [baseToken, ...userTokens]
-      return allTokens;
-    };
-
     const TabPanel = ()=> {
 
       return (
              <TableContainer>
               <Table sx={{ maxWidth: '100%' }} aria-label="token balances table">
               <TableBody>
-              {getAllUserTokens()?.map((row, index) => (
+              {allUserTokens?.map((row, index) => (
           <TableRow
             key={`${row.symbol}-${index}`}
             sx={{ 'th': { border: 0 }, cursor: 'pointer', '&:hover': { background: 'rgba(201, 208, 231, 0.08)' } }}
