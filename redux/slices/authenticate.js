@@ -99,6 +99,7 @@ export const getSwapAvailableTokens = (state) => state.authenticate.swapAvailabl
 
 export const getAllUserTokens = (state) => {
   const nativeToken = {...state?.authenticate?.nativeToken, balance: state?.authenticate?.nativeBalance, isNativeToken: true}
+  // eslint-disable-next-line no-unsafe-optional-chaining
   const allTokens = [nativeToken, ...state?.authenticate?.userTokens]
   return allTokens;
 }

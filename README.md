@@ -26,8 +26,8 @@ npm create next-app --example with-tailwindcss with-tailwindcss-app
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
 
-## Node version 16.17.1 or higher
+## Node version 16.18.1 or higher
 
 ```bash
-nvm use 16.17.1
+nvm use 16.18.1
 ```

@@ -249,7 +249,7 @@ const Main = () => {
 
   const getGasFormatted = (gasBuffer = 1) => {
     const chainId = currentNetwork.chainId;
-    const decimals = getNetworkData(chainId).decimals;
+    const decimals = getNetworkData(chainId)?.decimals;
     const gasFormatted = ethers.utils.formatUnits(String(totalGas * gasBuffer), decimals);
     return gasFormatted;
   }
@@ -344,7 +344,7 @@ const Main = () => {
         callQuotePrice();
          interval =  setInterval(() => {
           callQuotePrice();
-        }, 8000);
+        }, 30000);
       } else {
         clearInterval(interval)
       }
