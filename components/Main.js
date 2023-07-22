@@ -54,8 +54,9 @@ import {
   Button,
   TypographyGray,
   InputRow,
-  SendToWrapper,
+  SendToIconWrapper,
   ExpandMoreIcon,
+  SendToInputWrapper,
 } from "./main.style"
 
 
@@ -262,7 +263,7 @@ const Main = () => {
     const chainId = currentNetwork.chainId;
     const gas = getGasFormatted();
     const currency = getNetworkData(chainId)?.currency;
-    return <div>Estimated Fee: {gas} {currency}</div>;
+    return <TypographyGray px={3} py={2}>Network Fee: {gas} {currency}</TypographyGray>;
   }
 
   const setMaxTokeTradeBalance = () => {
@@ -494,11 +495,10 @@ const Main = () => {
                 }
               </BalanceMaxGroup>
             </InputRow>
-            <SendToWrapper>
+            <SendToIconWrapper>
             <ExpandMoreIcon $isOpen={showSendTo} onClick={()=>setShowSendTo(!showSendTo)}/>
-            </SendToWrapper>
-            {
-              showSendTo && <div className={style.transferPropContainer}>
+            </SendToIconWrapper>
+            <SendToInputWrapper className={`${showSendTo ? `active ${style.transferPropContainer}`:`inactive ${style.transferPropContainer}`}`}>
               <Input
                 type='text'
                 className={style.transferPropInput}
@@ -511,7 +511,9 @@ const Main = () => {
                 }}
                 value={sendToAddress}
               />
-            </div> 
+            </SendToInputWrapper> 
+            {
+              isShowFee() ? <EstimateGas /> : ''
             }
             <button 
             onClick={e => handleSubmit(e)} 
@@ -520,9 +522,6 @@ const Main = () => {
             >
               Confirm
             </button>
-            {
-              isShowFee() ? <EstimateGas /> : ''
-            }
           </div>
           :
           <div className={style.content} onClick={(e) => {
@@ -561,7 +560,7 @@ const Main = () => {
               </IconButton> */}
             </Paper>
             <Divider />
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table sx={{ maxWidth: '100%' }} aria-label="simple table">
                 {MemoizedTable}
               </Table>

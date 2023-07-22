@@ -141,7 +141,7 @@ export const InputRow = styled.div`
 
 // `;
 
-export const SendToWrapper = styled.div`
+export const SendToIconWrapper = styled.div`
 display: flex;
 justify-content: center;
 `;
@@ -149,8 +149,16 @@ justify-content: center;
 export const ExpandMoreIcon = styled(ExpandMore)`
 ${({ $isOpen }) => `
 rotate: ${$isOpen ? "180deg": "unset"};
+cursor: pointer;
 `}
 `;
 
-// export const Typography = styled(MuiTypography)`
-// `;
+
+export const SendToInputWrapper = styled.div`
+&.inactive {
+  display: none;
+}
+&.active {
+ display: block;
+}
+`;
