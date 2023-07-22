@@ -208,7 +208,7 @@ export const TransactionProvider = ({ children }) => {
       return response;
     } catch (error) {
       console.error("sendTransaction:", type, error);
-      alert("Transaction failure. Please reload the page and try again.");
+      // alert("Transaction failure. Please reload the page and try again.");
       setIsLoading(false);
       //console.log("sendTransaction=>", value, ethers.BigNumber.from(value).toHexString(), ethers.BigNumber.from(String(value)).toHexString());
     }

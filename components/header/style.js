@@ -8,7 +8,7 @@ import {
 
 export const Menu = styled(MuiMenu)`
 .MuiPaper-root {
-  background-color: #191B1F;
+  background-color: #1a1a1a;
   color: white;
 }
 `;
@@ -35,3 +35,7 @@ color: white;
 `;
 
 export const Avatar = styled(MuiAvatar)``;
+
+export const MenuMobile = styled.div`
+max-height: 64px;
+`;

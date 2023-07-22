@@ -29,7 +29,7 @@ import {
   getAccount,
   getNetwork,
 } from "../../redux/slices/authenticate";
-import { Desktop, Mobile } from '../layout/responsive';
+import { TabletToDesktop, Mobile } from '../layout/responsive';
 
 import {
   Menu,
@@ -37,17 +37,18 @@ import {
   MenuItemButton,
   NetworkName,
   Avatar,
+  MenuMobile,
 } from "./style"
 
 const style = {
-  wrapper: `p-4 w-screen flex justify-between items-center overflow-auto`,
-  headerLogo: `flex w-1/4 items-center justify-start`,
+  wrapper: `p-4 w-screen flex justify-between items-center overflow-hidden`,
+  headerLogo: `flex lg:w-1/4 max-sm:w-1/8 items-center justify-start`,
   nav: `flex-1 flex justify-center items-center`,
-  navItemsContainer: `flex bg-[#191B1F] rounded-3xl`,
+  navItemsContainer: `flex bg-[#1a1a1a] rounded-3xl`,
   navItem: `px-4 py-2 m-1 flex items-center sm:text-base md:text-md font-semibold cursor-pointer rounded-3xl`,
   activeNavItem: `bg-[#20242A]`,
   buttonsContainer: `flex w-1/4 justify-end items-center`,
-  button: `flex items-center bg-[#191B1F] rounded-2xl mx-2 text-[0.9rem] font-semibold cursor-pointer gap-1`,
+  button: `flex items-center bg-[#1a1a1a] rounded-2xl mx-2 text-[0.9rem] font-semibold cursor-pointer gap-1`,
   buttonPadding: `p-2`,
   buttonTextContainer: `h-8 flex items-center`,
   buttonIconContainer: `flex items-center justify-center w-8 h-8`,
@@ -119,7 +120,7 @@ const Header = () => {
           <Image src={uniswapLogo} alt='3ether.io' height={40} width={40} />
         </div>
         {
-          <Desktop>
+          <TabletToDesktop>
             <div className={style.nav}>
           <div className={style.navItemsContainer}>
             <div
@@ -134,7 +135,7 @@ const Header = () => {
               </Link>
             </div>
             <a
-              href={getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
+              href={`${getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}/address/${currentAccount}`}
               target='_blank'
               rel='noreferrer'
             >
@@ -144,7 +145,7 @@ const Header = () => {
             </a>
           </div>
         </div>
-        </Desktop>
+        </TabletToDesktop>
         }
         <div className={style.buttonsContainer}>
           <div className={`${style.button} ${style.buttonPadding}`} onClick={handleClickNetwork}>
@@ -204,7 +205,7 @@ const Header = () => {
       </div>
       {
           <Mobile>
-        <div className={style.nav}>
+        <MenuMobile className={style.nav}>
           <div className={style.navItemsContainer}>
             <div
               onClick={() => setSelectedNav('swap')}
@@ -227,7 +228,7 @@ const Header = () => {
               </div>
             </a>
           </div>
-        </div>
+        </MenuMobile>
         </Mobile>
         }
     </Fragment>

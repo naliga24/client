@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 // import { v4 as uuidv4 } from 'uuid';
 import { useWeb3React } from '@web3-react/core';
 import { useRouter } from 'next/router'
+import { isMobile } from '../utils/userAgent'
 import TransactionLoader from './TransactionLoader'
 import {
   swapTokensAvailable,
@@ -51,8 +52,10 @@ import {
   InputGroup,
   BalanceMaxGroup,
   Button,
-  TypographyBalance,
+  TypographyGray,
   InputRow,
+  SendToWrapper,
+  ExpandMoreIcon,
 } from "./main.style"
 
 
@@ -60,12 +63,12 @@ Modal.setAppElement('#__next')
 
 const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 z-10`,
-  content: `bg-[#191B1F] w-[30rem] rounded-2xl p-4 z-0`,
+  content: `bg-[#1a1a1a] w-[30rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
   transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between flex-col`,
   transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl`,
   currencySelector: `flex`,
-  currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl sm:text-base md:text-lg font-medium cursor-pointer p-2 mt-[-0.2rem]`,
+  currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl sm:text-base md:text-lg font-normal cursor-pointer px-4 py-2 mt-[-0.2rem]`,
   currencySelectorIcon: `w-max flex items-center`,
   currencySelectorTicker: `mx-2`,
   currencySelectorArrow: `text-lg`,
@@ -104,6 +107,7 @@ const Main = () => {
   const [apiHealthCheck, setApiHealthCheck] = useState(true);
   const [, setTxApproveHash] = useState("");
   const [, setTxSwapHash] = useState("");
+  const [showSendTo, setShowSendTo] = useState(false);
   //const [uuid, setUuid] = useState(uuidv4());
 
   const currentAccount = useAppSelector(getAccount);
@@ -159,13 +163,13 @@ const Main = () => {
                     }) 
                   } else {
                     setLoadingAll(false);
-                    alert("Sorry got error for swapped, Please try again.")
+                    alert("Sorry got an error for swap transaction, Please try again.")
                   }
                 });
               })
             } else {
               setLoadingAll(false);
-              alert("Sorry got error for approval, Please try again.")
+              alert("Sorry got an error for approval transaction, Please try again.")
             }
           });
     } catch (error) {
@@ -420,6 +424,9 @@ const Main = () => {
               </div>
             </div>
             <InputRow className={style.transferPropContainer}>
+              <TypographyGray>
+              You sell
+              </TypographyGray>
               <InputGroup>
                 <Input
                 type='number'
@@ -450,14 +457,17 @@ const Main = () => {
               </InputGroup>
               <BalanceMaxGroup>
                 {
-              selectFromToken && <TypographyBalance>Balance: {getFromTokenBalance()?.balance?.formatted || 0}</TypographyBalance>
+              selectFromToken && <TypographyGray>Balance: {getFromTokenBalance()?.balance?.formatted || 0}</TypographyGray>
                 }
               {
               selectFromToken && getFromTokenBalance() && <Button onClick={setMaxTokeTradeBalance}>Max</Button>
               }
               </BalanceMaxGroup>
             </InputRow>
-            <div className={style.transferPropContainer}>
+            <InputRow className={style.transferPropContainer}>
+            <TypographyGray>
+              You buy
+              </TypographyGray>
             <InputGroup>
               <Input
                 type='number'
@@ -480,15 +490,19 @@ const Main = () => {
               </InputGroup>
               <BalanceMaxGroup>
               {
-              selectToToken && <TypographyBalance>Balance: {getToTokenBalance()?.balance?.formatted || 0}</TypographyBalance>
+              selectToToken && <TypographyGray>Balance: {getToTokenBalance()?.balance?.formatted || 0}</TypographyGray>
                 }
               </BalanceMaxGroup>
-            </div>
-            <div className={style.transferPropContainer}>
+            </InputRow>
+            <SendToWrapper>
+            <ExpandMoreIcon $isOpen={showSendTo} onClick={()=>setShowSendTo(!showSendTo)}/>
+            </SendToWrapper>
+            {
+              showSendTo && <div className={style.transferPropContainer}>
               <Input
                 type='text'
                 className={style.transferPropInput}
-                placeholder='Receiver address 0x...'
+                placeholder='receiver address 0x...'
                 onChange={e => {
                  const value = e.target.value;
                  const isCorrectAddress = ethers.utils.isAddress(value);
@@ -497,7 +511,8 @@ const Main = () => {
                 }}
                 value={sendToAddress}
               />
-            </div>
+            </div> 
+            }
             <button 
             onClick={e => handleSubmit(e)} 
             className={style.confirmButton} 
@@ -523,13 +538,13 @@ const Main = () => {
             </div>
             <Paper
               component="form"
-              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%', mt: '12px' }}
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%', mt: '12px', borderRadius:"1rem" }}
             >
               <IconButton sx={{ p: '10px' }} aria-label="menu">
                 <SearchIcon />
               </IconButton>
               <InputBase
-                autoFocus
+                autoFocus={!isMobile}
                 sx={{ ml: 1, flex: 1 }}
                 placeholder="Search by name or address"
                 inputProps={{ 'aria-label': 'search token name or address' }}
@@ -564,7 +579,10 @@ const Main = () => {
     {
       !apiHealthCheck && <AlertStyled 
       severity="error" 
-      onClose={() => setApiHealthCheck(true)}
+      onClose={() => {
+        console.log("onClose=>");
+        setApiHealthCheck(true)}
+      }
       >Opps!<br/>We found a problem with an API.<br/>Try to connect with your wallet or reload the page.<br/>If the issue still persists, check your internet connection.
       </AlertStyled>
     }

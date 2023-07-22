@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { IoIosArrowBack } from 'react-icons/io'
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
   Paper as MuiPaper,
   InputBase as MuiInputBase,
@@ -40,17 +41,35 @@ export const SearchHeadWrapper = styled.div`
 
 export const Divider = styled(MuiDivider)`
 margin: 24px 0 !important;
-background-color: white;
+background-color: rgb(94, 104, 135);
 `;
 
 
 export const TableContainer = styled(MuiTableContainer)`
 max-height: 50vh;
 overflow-x: hidden !important;
+
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+  background: #1a1a1a;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #1a1a1a;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(94, 104, 135); 
+  border-radius: 10px;
+}
 `;
 
 export const Table = styled(MuiTable)`
-background-color: #191B1F;
+background-color: #1a1a1a;
 `;
 
 export const TableBody = styled(MuiTableBody)`
@@ -109,7 +128,7 @@ export const Button = styled(MuiButton)`
 
 `;
 
-export const TypographyBalance = styled(MuiTypography)`
+export const TypographyGray = styled(MuiTypography)`
 ${({ theme: {palette: {custom}} }) => `
   color: ${custom.grayMidDark} !important;
 `}
@@ -120,4 +139,18 @@ export const InputRow = styled.div`
 
 // export const Dialog = styled(MuiDialog)`
 
+// `;
+
+export const SendToWrapper = styled.div`
+display: flex;
+justify-content: center;
+`;
+
+export const ExpandMoreIcon = styled(ExpandMore)`
+${({ $isOpen }) => `
+rotate: ${$isOpen ? "180deg": "unset"};
+`}
+`;
+
+// export const Typography = styled(MuiTypography)`
 // `;

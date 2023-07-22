@@ -119,7 +119,7 @@ overflow-x: hidden !important;
 `;
 
 export const Table = styled(MuiTable)`
-background-color: #191B1F;
+background-color: #1a1a1a;
 `;
 
 export const TableBody = styled(MuiTableBody)`

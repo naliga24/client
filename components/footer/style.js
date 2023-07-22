@@ -14,3 +14,7 @@ padding: 1rem;
 color: white !important;
 opacity: 0.5;
 `;
+
+export const FooterWrapper = styled.div`
+text-align: center;
+`;

@@ -55,9 +55,13 @@ const customStyles = {
             dispatchStore(setProvider(connection?.type));
             dispatchStore(setWallet(connection?.name));
           } catch (error) {
-            console.error("tryActivation", error);
-            //connection.connector.deactivate();
-            //connection.connector.resetState()
+            if (connection.connector && connection.connector.deactivate) {
+              connection.connector.deactivate()
+            }
+            await connection.connector.actions.update("0x0")
+            if(String(error).toLowerCase().search('metamask') !== -1){
+              connection.overrideActivate();
+            }
           }
         },
         []
@@ -87,8 +91,9 @@ const customStyles = {
           <TypographyLegalDocs variant="body1">
           By connecting a wallet, you agree to 3ether.io 
           <StyledLink 
-          href="/"> Terms of Service</StyledLink> and consent to its 
-          <StyledLink href="/"> Privacy Policy</StyledLink>.
+          target="_blank" rel="noopener noreferrer"
+          href="https://1inch.io/assets/1inch_network_terms_of_use.pdf"> Terms of Service</StyledLink> and consent to its 
+          <StyledLink target="_blank" rel="noopener noreferrer" href="https://1inch.io/assets/1inch_network_privacy_policy.pdf"> Privacy Policy</StyledLink>.
             </TypographyLegalDocs> 
         </ContainerModal>
       </Modal>
