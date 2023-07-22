@@ -57,6 +57,7 @@ import {
   SendToIconWrapper,
   ExpandMoreIcon,
   SendToInputWrapper,
+  ConfirmButton,
 } from "./main.style"
 
 
@@ -73,7 +74,7 @@ const style = {
   currencySelectorIcon: `w-max flex items-center`,
   currencySelectorTicker: `mx-2`,
   currencySelectorArrow: `text-lg`,
-  confirmButton: `bg-[#2172E5] my-2 rounded-2xl py-6 px-8 sm:text-base md:text-lg font-semibold flex items-center justify-center !disabled:cursor-pointer !disabled:border-[#2172E5] !disabled:hover:border-[#234169] w-full disabled:bg-[#20242A] disabled:text-gray-400`,
+  confirmButton: `my-2 rounded-2xl py-6 px-8 sm:text-base md:text-lg font-semibold flex items-center justify-center !disabled:cursor-pointer w-full shadow-md hover:from-blue-600 hover:to-blue-800 disabled:bg-[#20242A] disabled:text-gray-400`,
 }
 
 const customStyles = {
@@ -515,13 +516,13 @@ const Main = () => {
             {
               isShowFee() ? <EstimateGas /> : ''
             }
-            <button 
+            <ConfirmButton 
             onClick={e => handleSubmit(e)} 
-            className={style.confirmButton} 
+            className={`${!isDisableConfirm ? "bg-gradient-to-b from-blue-500 to-blue-900 shadow-md hover:from-blue-600 hover:to-blue-800":"" }${style.confirmButton}`} 
             disabled={isDisableConfirm}
             >
               Confirm
-            </button>
+            </ConfirmButton>
           </div>
           :
           <div className={style.content} onClick={(e) => {

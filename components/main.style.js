@@ -162,3 +162,6 @@ export const SendToInputWrapper = styled.div`
  display: block;
 }
 `;
+
+export const ConfirmButton = styled.button`
+`;
