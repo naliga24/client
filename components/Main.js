@@ -62,7 +62,7 @@ import {
 Modal.setAppElement('#__next')
 
 const style = {
-  wrapper: `w-screen flex items-center justify-center mt-14 z-10`,
+  wrapper: `w-screen flex items-center justify-center mt-14 max-sm:mt-0 z-10`,
   content: `bg-[#1a1a1a] w-[30rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
   transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between flex-col`,
