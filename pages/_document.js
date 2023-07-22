@@ -4,7 +4,7 @@ const head = {
   title: "3ether.io | DEX",
   description: "DEX",
   name: "3ether.io",
-  image: '/icon-512x512.png',
+  image: '/android-chrome-192x192.png',
   url: "https://www.3ether.io/",
 }
 class MyDocument extends Document {
@@ -12,9 +12,11 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="apple-touch-icon" href="/icon-512x512.png"></link>
-          <meta name="theme-color" content="#fff" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+        <link rel="manifest" href="/site.webmanifest"/>
+          <meta name="theme-color" content="#1a1a1a" />
           <noscript id="jss-insertion-point"></noscript>
       <meta name="description" content={head.description} />
       <>
