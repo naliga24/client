@@ -47,7 +47,7 @@ import {
   TableCell,
   Typography,
   Input,
-  AlertStyled,
+  // AlertStyled,
   Avatar,
   InputGroup,
   BalanceMaxGroup,
@@ -106,7 +106,7 @@ const Main = () => {
   const [sendToAddress, setSendToAddress] = useState('');
   const [isSendToAddressCorrect, setIsSendToAddressCorrect] = useState(true);
   const [isDisableConfirm, setIsDisableConfirm] = useState(true);
-  const [apiHealthCheck, setApiHealthCheck] = useState(true);
+  // const [apiHealthCheck, setApiHealthCheck] = useState(true);
   const [, setTxApproveHash] = useState("");
   const [, setTxSwapHash] = useState("");
   const [showSendTo, setShowSendTo] = useState(false);
@@ -217,11 +217,11 @@ const Main = () => {
       const params = { chainId: currentNetwork.chainId};
       const response = await healthCheck(params);
       const isGoodHealth = response && response?.data && response?.data?.code && response?.data?.code === 200;
-      setApiHealthCheck(isGoodHealth);
+      // setApiHealthCheck(isGoodHealth);
       console.log("callHealthCheck=>", isGoodHealth);
     } catch (error) {
       console.log(error)
-      setApiHealthCheck(false);
+      // setApiHealthCheck(false);
     }
   }
 
@@ -576,7 +576,7 @@ const Main = () => {
         <TransactionLoader />
       </Modal>
     </div >
-    {
+    {/* {
       !apiHealthCheck && <AlertStyled 
       severity="error" 
       onClose={() => {
@@ -585,7 +585,7 @@ const Main = () => {
       }
       >Opps!<br/>We found a problem with an API.<br/>Try to connect with your wallet or reload the page.<br/>If the issue still persists, check your internet connection.
       </AlertStyled>
-    }
+    } */}
     </>
     
   )
