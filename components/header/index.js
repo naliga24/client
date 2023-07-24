@@ -135,7 +135,7 @@ const Header = () => {
               </Link>
             </div>
             <a
-              href={`${getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}/address/${currentAccount}`}
+              href={currentAccount ? `${getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}/address/${currentAccount}`: getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
               target='_blank'
               rel='noreferrer'
             >
@@ -219,7 +219,7 @@ const Header = () => {
               </Link>
             </div>
             <a
-              href={getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
+              href={currentAccount ? `${getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}/address/${currentAccount}`: getNetworkMenu()?.changeNetworkParam?.blockExplorerUrls}
               target='_blank'
               rel='noreferrer'
             >
