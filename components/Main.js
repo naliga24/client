@@ -65,7 +65,7 @@ Modal.setAppElement('#__next')
 
 const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 max-sm:mt-0 z-10`,
-  content: `bg-[#1a1a1a] w-[34rem] rounded-2xl p-4 z-0`,
+  content: `bg-[#1a1a1a] w-[33rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
   transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between flex-col`,
   transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl text-ellipsis`,
@@ -307,7 +307,7 @@ const Main = () => {
             onClick={() => {
               if (selectType === 'from') {
                 setSelectFromToken(row);
-                setUnit('');
+                //setUnit('');
               } else if (selectType === 'to') {
                 setSelectToToken(row);
               }
