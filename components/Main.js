@@ -502,7 +502,7 @@ const Main = () => {
             <SendToInputWrapper className={`${showSendTo ? `active ${style.transferPropContainer}`:`inactive ${style.transferPropContainer}`}`}>
               <Input
                 type='text'
-                className={`${style.transferPropInput} mb-0`}
+                className={`${style.transferPropInput} !mb-0`}
                 placeholder='receiver address 0x...'
                 onChange={e => {
                  const value = e.target.value;
