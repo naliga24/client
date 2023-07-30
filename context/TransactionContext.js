@@ -82,6 +82,7 @@ export const TransactionProvider = ({ children }) => {
       if (!provider) return;
       const network = await provider.getNetwork();
       dispatchStore(setNetwork(network));
+      console.log("checkIfWalletIsConnectedNetwork=>", network);
     } catch (error) {
       console.error("checkIfWalletIsConnectedNetwork",error);
     }
@@ -109,13 +110,14 @@ export const TransactionProvider = ({ children }) => {
       dispatchStore(setNetwork(newNetwork));
         return;
       }
-      await provider.provider.request({
+      console.log("changeNetwork=>", provider,provider.provider, currentAccount);
+      await provider?.provider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: newNetwork.changeNetworkParam.chainId }],
       });
     } catch (error) {
       console.error("changeNetwork", error, newNetwork);
-      await provider.provider.request({
+      await provider?.provider?.request({
         method: 'wallet_addEthereumChain',
         params: [newNetwork.changeNetworkParam]
       });
@@ -237,6 +239,7 @@ export const TransactionProvider = ({ children }) => {
   }, [provider])
 
   useEffect(() => {
+    console.log("network=>");
     if(!provider) return;
     // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {

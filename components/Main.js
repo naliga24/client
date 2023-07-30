@@ -65,10 +65,10 @@ Modal.setAppElement('#__next')
 
 const style = {
   wrapper: `w-screen flex items-center justify-center mt-14 max-sm:mt-0 z-10`,
-  content: `bg-[#1a1a1a] w-[30rem] rounded-2xl p-4 z-0`,
+  content: `bg-[#1a1a1a] w-[34rem] rounded-2xl p-4 z-0`,
   formHeader: `px-2 flex items-center justify-between font-semibold sm:text-base md:text-md`,
   transferPropContainer: `bg-[#20242A] my-3 rounded-2xl p-6 border border-[#20242A] hover:border-[#41444F] flex justify-between flex-col`,
-  transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl`,
+  transferPropInput: `bg-transparent placeholder:text-[#B2B9D2] outline-none mb-6 w-full sm:text-base md:text-xl text-ellipsis`,
   currencySelector: `flex`,
   currencySelectorContent: `w-max w-full h-min flex justify-between items-center bg-[#2D2F36] hover:bg-[#41444F] rounded-2xl sm:text-base md:text-lg font-normal cursor-pointer px-4 py-2 mt-[-0.2rem]`,
   currencySelectorIcon: `w-max flex items-center`,
@@ -502,7 +502,7 @@ const Main = () => {
             <SendToInputWrapper className={`${showSendTo ? `active ${style.transferPropContainer}`:`inactive ${style.transferPropContainer}`}`}>
               <Input
                 type='text'
-                className={style.transferPropInput}
+                className={`${style.transferPropInput} mb-0`}
                 placeholder='receiver address 0x...'
                 onChange={e => {
                  const value = e.target.value;
