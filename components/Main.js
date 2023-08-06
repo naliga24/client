@@ -117,7 +117,7 @@ const Main = () => {
   const allUserTokens = useAppSelector(getAllUserTokens)
   const dispatchStore = useAppDispatch();
 
-  const { provider } = useWeb3React();
+  const { provider, account } = useWeb3React();
 
   const {
     sendTransaction,
@@ -134,7 +134,7 @@ const Main = () => {
 
   const callSwapToken = async () => {
     try {
-      if(!currentAccount){
+      if(!account){
         dispatchStore(openWalletModal());
         return;
       }
