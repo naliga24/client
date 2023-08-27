@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 //import Layout from "../../components/layout";
-import { getAllTokens } from "../../api/token";
+import { getAllTokens } from "../../api/swap";
 
 export default function Tokens() {
   useEffect(() => {

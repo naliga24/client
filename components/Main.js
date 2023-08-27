@@ -18,6 +18,9 @@ import {
   getTransactionApprove,
   getTransactionSwap,
   healthCheck,
+} from '../api/swap';
+import {
+  getTokenByAddress
 } from '../api/token';
 import { PLATFORM_OWNER, PLATFORM_FEE, getNetworkData} from '../utils/constants'
 import SearchIcon from '@mui/icons-material/Search';
@@ -117,6 +120,7 @@ const Main = () => {
   const allUserTokens = useAppSelector(getAllUserTokens)
   const dispatchStore = useAppDispatch();
 
+  // eslint-disable-next-line
   const { provider, account } = useWeb3React();
 
   const {
@@ -201,17 +205,29 @@ const Main = () => {
       const response = await quotePrice(params);
       if (response?.data?.payload) {
         const payload = response.data.payload;
-        const estimatedGas = payload.estimatedGas;
-        const gasPrice = await provider.getGasPrice();
-        const totalGas = Number(gasPrice._hex) * Number(estimatedGas);
+        // const estimatedGas = payload.estimatedGas;
+        //const gasPrice = await provider.getGasPrice();
+       // const totalGas = Number(gasPrice._hex) * Number(estimatedGas);
         setQuote(payload);
-        setTotalGas(totalGas);
+       // setTotalGas(totalGas);
       }
     } catch (error) {
       console.log(error)
     }
   }
 
+  const callGetTokenByAddress = async (address) => {
+    try {
+      const params = { chainId: currentNetwork.chainId, address };
+      const response = await getTokenByAddress(params);
+      console.log("callGetTokenByAddress=>", response);
+      return response?.data?.payload
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // eslint-disable-next-line
   const callHealthCheck = async () => {
     try {
       const params = { chainId: currentNetwork.chainId};
@@ -245,8 +261,8 @@ const Main = () => {
   }
 
   const setTokenWillReceive = () => {
-    if (quote && quote.toTokenAmount && quote.toToken && quote.toToken.decimals) {
-      const receive = ethers.utils.formatUnits(quote.toTokenAmount, quote.toToken.decimals);
+    if (quote && quote.toAmount) {
+      const receive = ethers.utils.formatUnits(quote.toAmount, selectToToken.decimals);
       setTokenReceive(receive);
     } else {
       setTokenReceive('');
@@ -359,9 +375,18 @@ const Main = () => {
   }, [selectFromToken?.address, selectToToken?.address, unit, isDisableConfirm])
 
   useEffect(() => {
+    // eslint-disable-next-line
+    const token = async() =>  {
+      if(quote?.toAmount){
+        const response = await callGetTokenByAddress(selectToToken?.address);
+        console.log("callGetTokenByAddress=>", response, selectToToken);
+      }
+    }
+   // token();
     setTokenWillReceive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit, quote?.fromToken?.address, quote?.toToken?.address, quote?.fromTokenAmount, quote?.estimatedGas])
+ //  }, [unit, quote?.fromToken?.address, quote?.toToken?.address, quote?.fromTokenAmount, quote?.estimatedGas])
+}, [unit, quote?.toAmount])
 
   useEffect(() => {
     const disabled = !selectFromToken?.address || !selectToToken?.address || (selectFromToken?.address === selectToToken?.address) || !(parseFloat(unit) > 0) || isLoading || !isSendToAddressCorrect;
@@ -379,7 +404,7 @@ const Main = () => {
   }, [unit])
 
   useEffect(() => {
-    callHealthCheck();
+    //callHealthCheck();
   },[])
 
   const updateUnitForNativeFromToken = () => {
