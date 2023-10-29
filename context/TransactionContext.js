@@ -67,13 +67,13 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-      if (!provider?.provider) return;
         const accounts = await provider.provider.request({ method: 'eth_accounts' });
         if (accounts?.length) {
           dispatchStore(setAccount(accounts[0]));
-        }
+        } 
     } catch (error) {
       console.error("checkIfWalletIsConnectedWeb3",error);
+      dispatchStore(resetAccount());
     }
   }
 
@@ -192,7 +192,7 @@ export const TransactionProvider = ({ children }) => {
       // console.log("sendTransaction1=>",ethers.utils.hexlify(chainId), ethers.BigNumber.from(chainId).toHexString(), ethers.BigNumber.from(gasPrice).toHexString(), ethers.utils.hexlify(parseInt(gasPrice)), typeof ethers.utils.hexlify(gas), typeof ethers.utils.hexlify(gas).toString(), typeof value);
       // return;
 
-      const response = await provider.provider.request({
+      const hash = await provider.provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -206,8 +206,12 @@ export const TransactionProvider = ({ children }) => {
           }
         ],
       })
-      console.log("response=>", response, type);
-      return response;
+      console.log("response=>", hash, type);
+      if(type === "approve"){
+        const receipt = await provider.waitForTransaction(hash); 
+        console.log("receipt=>", receipt);
+      }
+      return hash;
     } catch (error) {
       console.error("sendTransaction:", type, error);
       // alert("Transaction failure. Please reload the page and try again.");

@@ -5,14 +5,11 @@ import { coinmarketcap } from "../lib/coinMarketCap";
 
 const getAllTokens = async () => {
   try {
-    const response = await axios.get(
-      "/swap/getTopTokens",
-      {
-        validateStatus: function () {
-          return true;
-        },
-      }
-    );
+    const response = await axios.get("/swap/getTopTokens", {
+      validateStatus: function () {
+        return true;
+      },
+    });
     return response;
   } catch (err) {
     console.log(err);
@@ -22,12 +19,15 @@ const getAllTokens = async () => {
 
 const getAllTokensCoinMarketCap = async () => {
   try {
-    const response = await axiosLib.get('https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest', {
-      headers: {
-        'X-CMC_PRO_API_KEY': coinmarketcap.key,
-        'Accepts': 'application/json',
-      },
-    });
+    const response = await axiosLib.get(
+      "https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+      {
+        headers: {
+          "X-CMC_PRO_API_KEY": coinmarketcap.key,
+          Accepts: "application/json",
+        },
+      }
+    );
 
     return response;
   } catch (err) {
@@ -38,14 +38,11 @@ const getAllTokensCoinMarketCap = async () => {
 
 const getTokenMetadata = async () => {
   try {
-    const response = await axios.get(
-      "/swap/getTokenMetadata",
-      {
-        validateStatus: function () {
-          return true;
-        },
-      }
-    );
+    const response = await axios.get("/swap/getTokenMetadata", {
+      validateStatus: function () {
+        return true;
+      },
+    });
     return response;
   } catch (err) {
     console.log(err);
@@ -53,12 +50,25 @@ const getTokenMetadata = async () => {
   }
 };
 
-const swapToken = async ({ fromToken, toToken, walletAddress, amount, chainId, web3RpcUrl }) => {
+const swapToken = async ({
+  fromToken,
+  toToken,
+  walletAddress,
+  amount,
+  chainId,
+  web3RpcUrl,
+}) => {
   try {
     const response = await axios.post(
-      "/swap/swapToken", {
-      fromToken, toToken, walletAddress, amount, chainId, web3RpcUrl
-    },
+      "/swap/swapToken",
+      {
+        fromToken,
+        toToken,
+        walletAddress,
+        amount,
+        chainId,
+        web3RpcUrl,
+      },
       {
         validateStatus: function () {
           return true;
@@ -89,12 +99,29 @@ const swapTokensAvailable = async ({ chainId }) => {
   }
 };
 
-const quotePrice = async ({ fromToken, toToken, walletAddress, amount, chainId, fee }) => {
+const quotePrice = async ({
+  fromToken,
+  toToken,
+  walletAddress,
+  amount,
+  chainId,
+  fee,
+  slippage,
+  allowPartialFill,
+}) => {
   try {
     const response = await axios.post(
-      '/swap/quotePrice', {
-      fromToken, toToken, walletAddress, amount, chainId, fee
-    },
+      "/swap/quotePrice",
+      {
+        fromToken,
+        toToken,
+        walletAddress,
+        amount,
+        chainId,
+        fee,
+        slippage,
+        allowPartialFill,
+      },
       {
         validateStatus: function () {
           return true;
@@ -108,12 +135,23 @@ const quotePrice = async ({ fromToken, toToken, walletAddress, amount, chainId, 
   }
 };
 
-const getTransactionApprove = async ({ fromToken, walletAddress, amount, chainId, web3RpcUrl }) => {
+const getTransactionApprove = async ({
+  fromToken,
+  walletAddress,
+  amount,
+  chainId,
+  web3RpcUrl,
+}) => {
   try {
     const response = await axios.post(
-      '/swap/getTransactionApprove', {
-      fromToken, walletAddress, amount, chainId, web3RpcUrl
-    },
+      "/swap/getTransactionApprove",
+      {
+        fromToken,
+        walletAddress,
+        amount,
+        chainId,
+        web3RpcUrl,
+      },
       {
         validateStatus: function () {
           return true;
@@ -127,12 +165,33 @@ const getTransactionApprove = async ({ fromToken, walletAddress, amount, chainId
   }
 };
 
-const getTransactionSwap = async ({ fromToken, toToken, walletAddress, destReceiver, amount, chainId, referrerAddress, fee }) => {
+const getTransactionSwap = async ({
+  fromToken,
+  toToken,
+  walletAddress,
+  destReceiver,
+  amount,
+  chainId,
+  referrerAddress,
+  fee,
+  slippage,
+  allowPartialFill,
+}) => {
   try {
     const response = await axios.post(
-      '/swap/getTransactionSwap', {
-      fromToken, toToken, walletAddress, destReceiver, amount, chainId, referrerAddress, fee
-    },
+      "/swap/getTransactionSwap",
+      {
+        fromToken,
+        toToken,
+        walletAddress,
+        destReceiver,
+        amount,
+        chainId,
+        referrerAddress,
+        fee,
+        slippage,
+        allowPartialFill,
+      },
       {
         validateStatus: function () {
           return true;
@@ -146,16 +205,13 @@ const getTransactionSwap = async ({ fromToken, toToken, walletAddress, destRecei
   }
 };
 
-const healthCheck = async ({chainId}) => {
+const healthCheck = async ({ chainId }) => {
   try {
-    const response = await axios.get(
-      `/swap/healthcheck?chainId=${chainId}`,
-      {
-        validateStatus: function () {
-          return true;
-        },
-      }
-    );
+    const response = await axios.get(`/swap/healthcheck?chainId=${chainId}`, {
+      validateStatus: function () {
+        return true;
+      },
+    });
     return response;
   } catch (err) {
     console.log(err);
