@@ -842,7 +842,7 @@ const Main = () => {
             >
               <StyledFormControlLabel
                 value={0.1}
-                control={<StyledRadio />}
+                control={<StyledRadio sx={{ color: "rgb(143, 150, 172)" }} />}
                 label="0.1%"
               />
               <StyledFormControlLabel

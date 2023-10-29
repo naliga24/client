@@ -161,7 +161,11 @@ export const SendToInputWrapper = styled.div`
 
 export const ConfirmButton = styled.button``;
 
-export const StyledRadio = styled(Radio)``;
+export const StyledRadio = styled(Radio)`
+  && {
+    color: rgba(143, 150, 172, 0.5);
+  }
+`;
 
 export const StyledRadioGroup = styled(RadioGroup)``;
 
