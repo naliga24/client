@@ -20,12 +20,18 @@ import {
   healthCheck,
 } from "../api/swap";
 import { getTokenByAddress } from "../api/token";
+import { getGasPriceByChainId } from "../api/gas";
 import {
   PLATFORM_OWNER,
   PLATFORM_FEE,
   getNetworkData,
 } from "../utils/constants";
 import SearchIcon from "@mui/icons-material/Search";
+import { GiSeaTurtle, GiTurtleShell } from "react-icons/gi";
+import { BsFillRocketTakeoffFill } from "react-icons/bs";
+import { RxGear } from "react-icons/rx";
+import { MdDone, MdElectricBolt } from "react-icons/md";
+import { TiDeleteOutline } from "react-icons/ti";
 import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 import {
@@ -40,10 +46,12 @@ import {
   setCustomSlippage,
   setIsCustomSlippage,
   setIsPartialFill,
+  setGasPriceType,
   getSlippage,
   getCustomSlippage,
   getIsCustomSlippage,
   getIsPartialFill,
+  getGasPriceType,
 } from "../redux/slices/settings";
 
 import {
@@ -81,6 +89,7 @@ import {
   StyledFormHelperText,
   CustomSlippageContainer,
   StyledSwitch,
+  SettingLabelContainer,
 } from "./main.style";
 
 Modal.setAppElement("#__next");
@@ -141,6 +150,7 @@ const Main = () => {
   const customSlippage = useAppSelector(getCustomSlippage);
   const isCustomSlippage = useAppSelector(getIsCustomSlippage);
   const isPartialFill = useAppSelector(getIsPartialFill);
+  const gasPriceType = useAppSelector(getGasPriceType);
   const dispatchStore = useAppDispatch();
 
   // eslint-disable-next-line
@@ -174,6 +184,9 @@ const Main = () => {
         chainId,
         web3RpcUrl,
       };
+
+      const currentGasPrice = await callGetGasPriceByChainId();
+
       const paramsSwap = {
         fromToken: selectFromToken,
         toToken: selectToToken,
@@ -186,48 +199,54 @@ const Main = () => {
         fee: PLATFORM_FEE,
         slippage: slippageValue,
         allowPartialFill: isPartialFill,
+        gasPrice: currentGasPrice[gasPriceType].maxFeePerGas,
       };
 
-      // console.log("slippage=>", isPartialFill);
-      // return;
+      //console.log("callSwapToken=>", paramsSwap);
+      //return;
 
-      await getTransactionApprove(paramsApprove).then(async (txApprove) => {
-        const { data: { payload: payloadApprove = {} } = {} } = txApprove;
-        if (!payloadApprove?.error) {
-          payloadApprove.chainId = chainId;
-          payloadApprove.from = currentAccount;
-          console.log("txApprove=>", txApprove);
-          await sendTransaction(payloadApprove, "approve").then(
-            async (txApproveHash) => {
-              setTxApproveHash(txApproveHash);
-              await getTransactionSwap(paramsSwap).then(async (txSwap) => {
-                console.log("txSwap=>", txSwap);
-                const { data: { payload: payloadSwap = {} } = {} } = txSwap;
-                if (!payloadSwap?.error) {
-                  payloadSwap.chainId = chainId;
-                  await sendTransaction(payloadSwap, "swap").then(
-                    async (txSwapHash) => {
-                      setTxSwapHash(txSwapHash);
+      setTimeout(() => {
+        const swap = async () => {
+          await getTransactionApprove(paramsApprove).then(async (txApprove) => {
+            const { data: { payload: payloadApprove = {} } = {} } = txApprove;
+            if (!payloadApprove?.error) {
+              payloadApprove.chainId = chainId;
+              payloadApprove.from = currentAccount;
+              console.log("txApprove=>", txApprove);
+              await sendTransaction(payloadApprove, "approve").then(
+                async (txApproveHash) => {
+                  setTxApproveHash(txApproveHash);
+                  await getTransactionSwap(paramsSwap).then(async (txSwap) => {
+                    console.log("txSwap=>", txSwap);
+                    const { data: { payload: payloadSwap = {} } = {} } = txSwap;
+                    if (!payloadSwap?.error) {
+                      payloadSwap.chainId = chainId;
+                      await sendTransaction(payloadSwap, "swap").then(
+                        async (txSwapHash) => {
+                          setTxSwapHash(txSwapHash);
+                          setLoadingAll(false);
+                          clearData();
+                        }
+                      );
+                    } else {
                       setLoadingAll(false);
-                      clearData();
+                      alert(
+                        "Sorry got an error for swap transaction, Please try again."
+                      );
                     }
-                  );
-                } else {
-                  setLoadingAll(false);
-                  alert(
-                    "Sorry got an error for swap transaction, Please try again."
-                  );
+                  });
                 }
-              });
+              );
+            } else {
+              setLoadingAll(false);
+              alert(
+                "Sorry got an error for approval transaction, Please try again."
+              );
             }
-          );
-        } else {
-          setLoadingAll(false);
-          alert(
-            "Sorry got an error for approval transaction, Please try again."
-          );
-        }
-      });
+          });
+        };
+        swap();
+      }, 2000); // setTimeout to 2 seconds to avoide api rate limit error, causes by call (callGetGasPriceByChainId) 1inch api too frequently.
     } catch (error) {
       console.log("callSwapToken:", error);
       setLoadingAll(false);
@@ -286,6 +305,16 @@ const Main = () => {
       const params = { chainId: currentNetwork.chainId, address };
       const response = await getTokenByAddress(params);
       console.log("callGetTokenByAddress=>", response);
+      return response?.data?.payload;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const callGetGasPriceByChainId = async () => {
+    try {
+      const params = { chainId: currentNetwork.chainId };
+      const response = await getGasPriceByChainId(params);
       return response?.data?.payload;
     } catch (error) {
       console.log(error);
@@ -459,8 +488,10 @@ const Main = () => {
   };
 
   useEffect(() => {
-    callSwapTokenAvailable();
-    clearData();
+    if (currentNetwork.chainId) {
+      callSwapTokenAvailable();
+      clearData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNetwork.chainId]);
 
@@ -525,6 +556,22 @@ const Main = () => {
   }, [unit]);
 
   useEffect(() => {
+    const isFromTokenNative = getFromTokenBalance();
+    const gasFormatted = getGasFormatted(1.5);
+    const isNotEnoughtFunds =
+      parseFloat(unit) >
+      parseFloat(isFromTokenNative?.balance?.formatted) -
+        parseFloat(gasFormatted);
+    if (
+      Object.keys(quote)?.length &&
+      isFromTokenNative?.isNativeToken &&
+      isNotEnoughtFunds
+    ) {
+      updateUnitForNativeFromToken();
+    }
+  }, [unit, quote?.estimatedGas, quote?.fromToken?.address]);
+
+  useEffect(() => {
     //callHealthCheck();
   }, []);
 
@@ -587,6 +634,7 @@ const Main = () => {
     dispatchStore(setCustomSlippage(1.001));
     dispatchStore(setIsCustomSlippage(false));
     dispatchStore(setIsPartialFill(true));
+    dispatchStore(setGasPriceType("high"));
   };
 
   const defaultPage = () => {
@@ -801,6 +849,62 @@ const Main = () => {
   };
 
   const settings = () => {
+    const LowGasLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <GiTurtleShell /> Low
+        </SettingLabelContainer>
+      );
+    };
+
+    const MediumGasLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <GiSeaTurtle /> Medium
+        </SettingLabelContainer>
+      );
+    };
+
+    const HightGasLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <BsFillRocketTakeoffFill /> High
+        </SettingLabelContainer>
+      );
+    };
+
+    const InstantGasLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <MdElectricBolt /> Instant
+        </SettingLabelContainer>
+      );
+    };
+
+    const CustomGasLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <RxGear /> Custom
+        </SettingLabelContainer>
+      );
+    };
+
+    const PartialFillOnLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <MdDone /> On
+        </SettingLabelContainer>
+      );
+    };
+
+    const PartialFillOffLabel = () => {
+      return (
+        <SettingLabelContainer>
+          <TiDeleteOutline /> Off
+        </SettingLabelContainer>
+      );
+    };
+
     return (
       <div
         className={style.content}
@@ -824,6 +928,43 @@ const Main = () => {
           </Typography>
         </div>
         <InputRow className={`${style.transferPropContainer} gap-3`}>
+          <StyledFormControl>
+            <StyledFormLabel id="gas-price-label">Gas price</StyledFormLabel>
+            <StyledRadioGroup
+              aria-labelledby="gas-price-buttons-group-label"
+              value={gasPriceType}
+              onChange={(e) => {
+                dispatchStore(setGasPriceType(e.target.value));
+              }}
+            >
+              <StyledFormControlLabel
+                value="low"
+                control={<StyledRadio sx={{ color: "rgb(143, 150, 172)" }} />}
+                label={<LowGasLabel />}
+              />
+              <StyledFormControlLabel
+                value="medium"
+                control={<StyledRadio />}
+                label={<MediumGasLabel />}
+              />
+              <StyledFormControlLabel
+                value="high"
+                control={<StyledRadio />}
+                label={<HightGasLabel />}
+              />
+              <StyledFormControlLabel
+                value="instant"
+                control={<StyledRadio />}
+                label={<InstantGasLabel />}
+              />
+              <StyledFormControlLabel
+                value="custom"
+                control={<StyledRadio />}
+                label={<CustomGasLabel />}
+              />
+            </StyledRadioGroup>
+          </StyledFormControl>
+
           <StyledFormControl>
             <StyledFormLabel>Slippage tolerance</StyledFormLabel>
             <StyledRadioGroup
@@ -878,29 +1019,15 @@ const Main = () => {
                   }}
                 />
               }
-              label={isPartialFill ? "On" : "Off"}
+              label={
+                isPartialFill ? <PartialFillOnLabel /> : <PartialFillOffLabel />
+              }
             />
           </StyledFormControl>
         </InputRow>
       </div>
     );
   };
-
-  useEffect(() => {
-    const isFromTokenNative = getFromTokenBalance();
-    const gasFormatted = getGasFormatted(1.5);
-    const isNotEnoughtFunds =
-      parseFloat(unit) >
-      parseFloat(isFromTokenNative?.balance?.formatted) -
-        parseFloat(gasFormatted);
-    if (
-      Object.keys(quote)?.length &&
-      isFromTokenNative?.isNativeToken &&
-      isNotEnoughtFunds
-    ) {
-      updateUnitForNativeFromToken();
-    }
-  }, [unit, quote?.estimatedGas, quote?.fromToken?.address]);
 
   const head = {
     title: "3EtHeR.io | DEX",

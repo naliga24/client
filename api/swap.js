@@ -176,6 +176,7 @@ const getTransactionSwap = async ({
   fee,
   slippage,
   allowPartialFill,
+  gasPrice,
 }) => {
   try {
     const response = await axios.post(
@@ -191,6 +192,7 @@ const getTransactionSwap = async ({
         fee,
         slippage,
         allowPartialFill,
+        gasPrice,
       },
       {
         validateStatus: function () {

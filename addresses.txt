@@ -1,0 +1,16 @@
+//list process using port 3000
+sudo lsof -i :3000
+//kill by pid
+kill -9 {PID}
+// fix read only error (run this cmd on windows cmd)
+SFC /scannow
+//To remove from git but still have on locally.
+git rm yarn.lock --cached
+//
+We need  yarn.lock file to be build on aws Amplify
+//check storage
+df -h
+//check directory file size
+du -hs /path/to/directory
+// file on ec2 that setup proxy server for apache server. (map "http://localhost:3031/api/v1" with "https://www.api.3ether.io")
+/etc/httpd/conf/httpd.conf

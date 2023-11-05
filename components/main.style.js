@@ -210,3 +210,12 @@ export const CustomSlippageContainer = styled.div`
 `;
 
 export const StyledSwitch = styled(Switch)``;
+
+export const SettingLabelContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  svg {
+    font-size: 1.5rem;
+  }
+`;

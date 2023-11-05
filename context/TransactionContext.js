@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { contractABI, contractAddress } from '../lib/constants'
-import { ethers } from 'ethers'
-import { useRouter } from 'next/router'
+import React, { useEffect, useState } from "react";
+import { contractABI, contractAddress } from "../lib/constants";
+import { ethers } from "ethers";
+import { useRouter } from "next/router";
 //import detectEthereumProvider from '@metamask/detect-provider';
-import { useWeb3React } from '@web3-react/core';
+import { useWeb3React } from "@web3-react/core";
 import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 import {
@@ -17,10 +17,10 @@ import {
   resetWallet,
   resetNativeBalance,
   resetNativeToken,
-  resetUserTokens
+  resetUserTokens,
 } from "../redux/slices/authenticate";
-import { getNetworkData } from '../utils/constants'
-import JSBI from 'jsbi'
+import { getNetworkData } from "../utils/constants";
+import JSBI from "jsbi";
 
 export const TransactionContext = React.createContext();
 
@@ -29,7 +29,7 @@ export const TransactionProvider = ({ children }) => {
 
   console.log("useWeb3React", account, chainId);
 
-  const currentAccount = useAppSelector(getAccount)
+  const currentAccount = useAppSelector(getAccount);
   const dispatchStore = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -44,38 +44,40 @@ export const TransactionProvider = ({ children }) => {
     dispatchStore(resetNativeToken());
     dispatchStore(resetUserTokens());
     setIsLoading(false);
-  }
+  };
 
   const disconnect = () => {
     logOut();
     if (connector && connector.deactivate) {
-      connector.deactivate()
+      connector.deactivate();
     }
-    connector.resetState()
-  }
+    connector.resetState();
+  };
 
   const getEthereumContract = () => {
-    const signer = provider.getSigner()
+    const signer = provider.getSigner();
     const transactionContract = new ethers.Contract(
       contractAddress,
       contractABI,
-      signer,
-    )
-  
-    return transactionContract
-  }
+      signer
+    );
+
+    return transactionContract;
+  };
 
   const checkIfWalletIsConnectedWeb3 = async () => {
     try {
-        const accounts = await provider.provider.request({ method: 'eth_accounts' });
-        if (accounts?.length) {
-          dispatchStore(setAccount(accounts[0]));
-        } 
+      const accounts = await provider.provider.request({
+        method: "eth_accounts",
+      });
+      if (accounts?.length) {
+        dispatchStore(setAccount(accounts[0]));
+      }
     } catch (error) {
-      console.error("checkIfWalletIsConnectedWeb3",error);
+      console.error("checkIfWalletIsConnectedWeb3", error);
       dispatchStore(resetAccount());
     }
-  }
+  };
 
   const checkIfWalletIsConnectedNetwork = async () => {
     try {
@@ -84,9 +86,9 @@ export const TransactionProvider = ({ children }) => {
       dispatchStore(setNetwork(network));
       console.log("checkIfWalletIsConnectedNetwork=>", network);
     } catch (error) {
-      console.error("checkIfWalletIsConnectedNetwork",error);
+      console.error("checkIfWalletIsConnectedNetwork", error);
     }
-  }
+  };
 
   // const connectWalletWeb3 = async () => {
   //   try {
@@ -98,7 +100,7 @@ export const TransactionProvider = ({ children }) => {
   //     console.log("connectWalletWeb3");
   //     if(accounts && accounts?.length){
   //       setCurrentAccount(accounts[0]);
-  //     } 
+  //     }
   //   } catch (error) {
   //     console.error("connectWalletWeb3",error);
   //   }
@@ -107,22 +109,21 @@ export const TransactionProvider = ({ children }) => {
   const changeNetwork = async (newNetwork) => {
     try {
       if (!provider || !currentAccount) {
-      dispatchStore(setNetwork(newNetwork));
+        dispatchStore(setNetwork(newNetwork));
         return;
       }
-      console.log("changeNetwork=>", provider,provider.provider, currentAccount);
       await provider?.provider.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId: newNetwork.changeNetworkParam.chainId }],
       });
     } catch (error) {
       console.error("changeNetwork", error, newNetwork);
       await provider?.provider?.request({
-        method: 'wallet_addEthereumChain',
-        params: [newNetwork.changeNetworkParam]
+        method: "wallet_addEthereumChain",
+        params: [newNetwork.changeNetworkParam],
       });
     }
-  }
+  };
 
   const sign = async (msg) => {
     try {
@@ -136,9 +137,9 @@ export const TransactionProvider = ({ children }) => {
         address,
       };
     } catch (error) {
-      console.error("sign",error);
+      console.error("sign", error);
     }
-  }
+  };
 
   const verify = ({ message, address, signature }) => {
     try {
@@ -147,53 +148,41 @@ export const TransactionProvider = ({ children }) => {
         return false;
       }
       return true;
-
     } catch (error) {
-      console.error("verify",error);
+      console.error("verify", error);
     }
-  }
+  };
 
   const colectFees = async (transaction) => {
     try {
       if (!provider) return;
-      const {
-        walletAddress,
-        value,
-        chainId,
-      } = transaction;
+      const { walletAddress, value, chainId } = transaction;
 
       const response = await provider.provider.request({
-        method: 'eth_sendTransaction',
+        method: "eth_sendTransaction",
         params: [
           {
-            to: '0x94343086a9E6Fa7f7df421308C7DDE131BA25bAd',
+            to: "0x94343086a9E6Fa7f7df421308C7DDE131BA25bAd",
             from: walletAddress,
             value: ethers.BigNumber.from(value).toHexString(),
             chainId: ethers.utils.hexlify(chainId),
-          }
+          },
         ],
-      })
+      });
       return response;
     } catch (error) {
-      console.error("colectFees",error);
+      console.error("colectFees", error);
     }
-  }
+  };
 
-  const sendTransaction = async (
-    transaction, type
-  ) => {
+  const sendTransaction = async (transaction, type) => {
     try {
-      console.log("type=>", type);
       if (!provider) return;
 
       const { data, gasPrice, gas, to, from, value, chainId } = transaction;
 
-      // console.log("sendTransaction0=>",gas, JSBI.BigInt(gas).toString(), value, JSBI.BigInt(gas).toString(16), ethers.BigNumber.from(value).toHexString(), ethers.BigNumber.from(String(value)).toHexString(), ethers.BigNumber.from(value));
-      // console.log("sendTransaction1=>",ethers.utils.hexlify(chainId), ethers.BigNumber.from(chainId).toHexString(), ethers.BigNumber.from(gasPrice).toHexString(), ethers.utils.hexlify(parseInt(gasPrice)), typeof ethers.utils.hexlify(gas), typeof ethers.utils.hexlify(gas).toString(), typeof value);
-      // return;
-
       const hash = await provider.provider.request({
-        method: 'eth_sendTransaction',
+        method: "eth_sendTransaction",
         params: [
           {
             gasPrice: ethers.BigNumber.from(gasPrice).toHexString(),
@@ -203,71 +192,73 @@ export const TransactionProvider = ({ children }) => {
             value: ethers.BigNumber.from(value).toHexString(),
             data,
             chainId: ethers.BigNumber.from(chainId).toHexString(),
-          }
+          },
         ],
-      })
-      console.log("response=>", hash, type);
-      if(type === "approve"){
-        const receipt = await provider.waitForTransaction(hash); 
-        console.log("receipt=>", receipt);
+      });
+      if (type === "approve") {
+        const receipt = await provider.waitForTransaction(hash);
+        console.log("receipt:", receipt);
       }
       return hash;
     } catch (error) {
       console.error("sendTransaction:", type, error);
-      // alert("Transaction failure. Please reload the page and try again.");
       setIsLoading(false);
-      //console.log("sendTransaction=>", value, ethers.BigNumber.from(value).toHexString(), ethers.BigNumber.from(String(value)).toHexString());
     }
-  }
+  };
 
   const setBalanceBaseToken = async () => {
     try {
-  if(!account) return;
-  const balance = await provider.getBalance(account);
-  const network = getNetworkData(chainId);
-  const decimals = network?.decimals;
-  const logo = network?.logoURI;
-  const name = network?.network;
-  const symbol = network?.currency;
-  const formattedBalance = ethers.utils.formatUnits(balance, decimals);
-  dispatchStore(setNativeBalance({raw: JSBI.BigInt(balance).toString(), formatted: formattedBalance}));
-  dispatchStore(setNativeToken({decimals, logo, name, symbol }));
+      if (!account) return;
+      const balance = await provider.getBalance(account);
+      const network = getNetworkData(chainId);
+      const decimals = network?.decimals;
+      const logo = network?.logoURI;
+      const name = network?.network;
+      const symbol = network?.currency;
+      const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+      dispatchStore(
+        setNativeBalance({
+          raw: JSBI.BigInt(balance).toString(),
+          formatted: formattedBalance,
+        })
+      );
+      dispatchStore(setNativeToken({ decimals, logo, name, symbol }));
     } catch (error) {
-      console.error("getBalance",error);
+      console.error("getBalance", error);
     }
-  }
+  };
 
   useEffect(() => {
-   checkIfWalletIsConnectedWeb3();
-   checkIfWalletIsConnectedNetwork();
-  }, [provider])
+    checkIfWalletIsConnectedWeb3();
+    checkIfWalletIsConnectedNetwork();
+  }, [provider]);
 
   useEffect(() => {
     console.log("network=>");
-    if(!provider) return;
+    if (!provider) return;
     // eslint-disable-next-line no-unused-vars
     provider.on("network", async (newNetwork, oldNetwork) => {
       console.log("network=>", newNetwork);
-     dispatchStore(setNetwork(newNetwork));
+      dispatchStore(setNetwork(newNetwork));
     });
-  }, [provider])
+  }, [provider]);
 
   useEffect(() => {
-    if(!account) return;
+    if (!account) return;
     dispatchStore(setAccount(account));
-  }, [account])
+  }, [account]);
 
   useEffect(() => {
     if (isLoading) {
-      router.push(`/?loading=${currentAccount}`)
+      router.push(`/?loading=${currentAccount}`);
     } else {
-      router.push('/')
+      router.push("/");
     }
-  }, [isLoading])
+  }, [isLoading]);
 
   useEffect(() => {
     setBalanceBaseToken();
-  }, [account, chainId])
+  }, [account, chainId]);
 
   return (
     <TransactionContext.Provider
@@ -285,5 +276,5 @@ export const TransactionProvider = ({ children }) => {
     >
       {children}
     </TransactionContext.Provider>
-  )
-}
+  );
+};
