@@ -3,7 +3,14 @@ import Head from "next/head";
 import { withTheme } from "styled-components";
 import { RiSettings3Fill } from "react-icons/ri";
 import { AiOutlineDown } from "react-icons/ai";
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
+import debounce from "lodash.debounce";
 import { TransactionContext } from "../context/TransactionContext";
 import Modal from "react-modal";
 import { ethers } from "ethers";
@@ -155,6 +162,16 @@ const Main = () => {
 
   // eslint-disable-next-line
   const { provider, account } = useWeb3React();
+
+  const changeUnitHandler = (e) => {
+    console.log("changeHandler=>", e.target.value);
+    setUnit(e.target.value);
+  };
+
+  const debouncedChangeUnitHandler = useCallback(
+    debounce(changeUnitHandler, 3000),
+    []
+  );
 
   const { sendTransaction, setIsLoading, isLoading } =
     useContext(TransactionContext);
@@ -497,7 +514,7 @@ const Main = () => {
 
   useEffect(() => {
     let interval;
-    if (!isDisableConfirm) {
+    if (!isDisableConfirm && !isLoading) {
       callQuotePrice();
       interval = setInterval(() => {
         callQuotePrice();
@@ -664,10 +681,7 @@ const Main = () => {
               className={style.transferPropInput}
               placeholder="0.0"
               pattern="^[0-9]*[.,]?[0-9]*$"
-              onChange={(e) => {
-                setUnit(e.target.value);
-              }}
-              value={unit}
+              onChange={debouncedChangeUnitHandler}
             />
             <div
               className={style.currencySelector}

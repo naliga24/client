@@ -46,6 +46,7 @@
     "fs": "^0.0.1-security",
     "jsbi": "^4.3.0",
     "jss": "^10.9.1",
+    "lodash.debounce": "^4.0.8",
     "magic-sdk": "^8.1.1",
     "moralis": "^1.10.1",
     "moralis-v1": "^1.12.0",
