@@ -180,7 +180,6 @@ const Main = () => {
 
   const setLoadingAll = (loading) => {
     setIsLoading(loading);
-    setLoading(loading);
   };
 
   const callSwapToken = async () => {
@@ -190,6 +189,7 @@ const Main = () => {
         return;
       }
       setLoadingAll(true);
+      setLoading(true);
       const amount = String(
         Number(ethers.utils.parseUnits(unit, selectFromToken.decimals)._hex)
       );
@@ -221,8 +221,8 @@ const Main = () => {
         gasPrice: currentGasPrice[gasPriceType].maxFeePerGas,
       };
 
-      //console.log("callSwapToken=>", paramsSwap);
-      //return;
+      // console.log("callSwapToken=>", paramsSwap);
+      // return;
 
       setTimeout(() => {
         const swap = async () => {
@@ -244,6 +244,7 @@ const Main = () => {
                         async (txSwapHash) => {
                           setTxSwapHash(txSwapHash);
                           setLoadingAll(false);
+                          setLoading(false);
                           clearData();
                         }
                       );
@@ -267,7 +268,7 @@ const Main = () => {
         swap();
       }, 2000); // setTimeout to 2 seconds to avoide api rate limit error, causes by call (callGetGasPriceByChainId) 1inch api too frequently.
     } catch (error) {
-      console.log("callSwapToken:", error);
+      console.error("callSwapToken:", error);
       setLoadingAll(false);
     }
   };
@@ -315,7 +316,7 @@ const Main = () => {
         // setTotalGas(totalGas);
       }
     } catch (error) {
-      console.log(error);
+      console.error("callQuotePrice:", error);
     }
   };
 
@@ -516,7 +517,7 @@ const Main = () => {
 
   useEffect(() => {
     let interval;
-    if (!isDisableConfirm || !isLoading || !loading) {
+    if (!isDisableConfirm && !isLoading && !loading) {
       callQuotePrice();
       interval = setInterval(() => {
         callQuotePrice();
@@ -531,6 +532,8 @@ const Main = () => {
     selectToToken?.address,
     unit,
     isDisableConfirm,
+    isLoading,
+    loading,
   ]);
 
   useEffect(() => {
