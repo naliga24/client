@@ -148,6 +148,7 @@ const Main = () => {
   const [, setTxApproveHash] = useState("");
   const [, setTxSwapHash] = useState("");
   const [showSendTo, setShowSendTo] = useState(false);
+  const [loading, setLoading] = useState(false);
   //const [uuid, setUuid] = useState(uuidv4());
 
   const currentAccount = useAppSelector(getAccount);
@@ -179,6 +180,7 @@ const Main = () => {
 
   const setLoadingAll = (loading) => {
     setIsLoading(loading);
+    setLoading(loading);
   };
 
   const callSwapToken = async () => {
@@ -514,7 +516,7 @@ const Main = () => {
 
   useEffect(() => {
     let interval;
-    if (!isDisableConfirm && !isLoading) {
+    if (!isDisableConfirm || !isLoading || !loading) {
       callQuotePrice();
       interval = setInterval(() => {
         callQuotePrice();
